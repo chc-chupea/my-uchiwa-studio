@@ -43,8 +43,8 @@
       cursor: pointer;
     }
     #notice {
-      margin-top: 10px;
-      font-size: 12px;
+      display: none;
+      min-height: 1.5em; /* 文字1行分の高さを確保 */
       color: green;
     }
 
@@ -258,17 +258,19 @@
     // ✅ PNG形式で保存
     document.getElementById('saveBtn').addEventListener('click', () => {
       const noticeEl = document.getElementById('notice');
+      noticeEl.style.display = 'block';              // 表示
+      noticeEl.textContent = saveWarningTexts[lang]; // メッセージ入れる
+      noticeEl.style.color = 'red';                   // 赤文字
 
       if (!uploadedImg) {
-        noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
+        console.log("警告表示: 画像未選択");
+        noticeEl.textContent = saveWarningTexts[lang];
         noticeEl.style.color = 'red';
 
-        setTimeout(() => {
-          noticeEl.textContent = '';
-          noticeEl.style.color = 'green'; // 元に戻す
-        }, 3000);
-        return;
-      }
+      setTimeout(() => {
+        noticeEl.style.display = 'none';  // 非表示に戻す
+        noticeEl.textContent = '';        // テキストも消す
+      }, 3000);
 
       canvas.toBlob(blob => {
         const link = document.createElement('a');
