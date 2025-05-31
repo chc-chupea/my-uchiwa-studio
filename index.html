@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -43,8 +44,8 @@
       cursor: pointer;
     }
     #notice {
-      display: none;
-      min-height: 1.5em; /* 文字1行分の高さを確保 */
+      margin-top: 10px;
+      font-size: 12px;
       color: green;
     }
 
@@ -258,19 +259,17 @@
     // ✅ PNG形式で保存
     document.getElementById('saveBtn').addEventListener('click', () => {
       const noticeEl = document.getElementById('notice');
-      noticeEl.style.display = 'block';              // 表示
-      noticeEl.textContent = saveWarningTexts[lang]; // メッセージ入れる
-      noticeEl.style.color = 'red';                   // 赤文字
 
       if (!uploadedImg) {
-        console.log("警告表示: 画像未選択");
-        noticeEl.textContent = saveWarningTexts[lang];
+        noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
         noticeEl.style.color = 'red';
 
-      setTimeout(() => {
-        noticeEl.style.display = 'none';  // 非表示に戻す
-        noticeEl.textContent = '';        // テキストも消す
-      }, 3000);
+        setTimeout(() => {
+          noticeEl.textContent = '';
+          noticeEl.style.color = 'green'; // 元に戻す
+        }, 3000);
+        return;
+      }
 
       canvas.toBlob(blob => {
         const link = document.createElement('a');
