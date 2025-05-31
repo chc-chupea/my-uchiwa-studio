@@ -197,6 +197,7 @@
         link.download = getTimestampBasedFileName().replace('.jpg', '.png'); // PNG拡張子に変更
         link.click();
         document.getElementById('notice').textContent = '📸 PNG形式で保存しました！';
+        document.getElementById('go-to-form').scrollIntoView({ behavior: 'smooth' });
       }, 'image/png'); // ← PNG形式を指定
     });
 
