@@ -30,6 +30,17 @@
       margin-top: 10px;
       font-size: 14px;
     }
+
+
+    #imageLoader {
+      font-size: 16px;      /* 文字サイズを大きく */
+      padding: 6px 12px;    /* 内側の余白を調整 */
+      width: 200px;         /* 幅をセレクトボックスと同じくらいに */
+      height: 34px;         /* 高さをセレクトボックスに合わせる */
+      cursor: pointer;      /* マウスカーソルを指マークに */
+      box-sizing: border-box; /* パディング込みの幅高さ調整 */
+    }
+
     #langButtons button {
       margin: 0 5px;
       padding: 5px 10px;
@@ -68,7 +79,7 @@
 
   <h1 id="title" data-ja="作っちゃおう！Myうちわ" data-en="Let's Make Our Own Fan!" data-zh="一起来制作我们的团扇！" data-ko="우리만의 부채를 만들어보자!" data-vi="Hãy cùng làm quạt giấy của riêng mình!">作っちゃおう！Myうちわ</h1>
 
-  <label id="templateLabel" data-ja="🎨 うちわのデザインを選んでね：" data-en="🎨 Choose a fan design:" data-zh="🎨 请选择一个团扇设计：" data-ko="🎨 부채 디자인을 선택하세요:" data-vi="🎨 Chọn thiết kế quạt:">🎨 うちわのデザインを選んでね：</label>
+  <label id="templateLabel" data-ja="うちわのデザインを選んでね👉" data-en="Choose a fan design👉" data-zh="请选择一个团扇设计👉" data-ko="부채 디자인을 선택하세요👉" data-vi="Chọn thiết kế quạt👉">うちわのデザインを選んでね👉</label>
   <select id="templateSelector">
     <option value="fan1-highres.png">無地</option>
     <option value="fan2-highres.png">夏祭り</option>
@@ -182,26 +193,21 @@
       draw();
     });
 
+    // ✅ PNG形式で保存
     document.getElementById('saveBtn').addEventListener('click', () => {
-      const link = document.createElement('a');
       canvas.toBlob(blob => {
-        // JPEG形式に変換して品質を設定
-        const quality = 0.7; // 画像品質を70%に設定（これで圧縮）
+        const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.download = getTimestampBasedFileName();
+        link.download = getTimestampBasedFileName().replace('.jpg', '.png'); // PNG拡張子に変更
         link.click();
-        document.getElementById('notice').textContent = '📸 保存しました！';
-
-        // 📌 フォームへ進むボタンを表示（← ここは toBlob のコールバック内に入れる）
-        //document.getElementById('go-to-form').style.display = 'inline-block';
-      }, 'image/jpeg', 0.9); // 'image/jpeg' 形式で圧縮を適用
+        document.getElementById('notice').textContent = '📸 PNG形式で保存しました！';
+      }, 'image/png'); // ← PNG形式を指定
     });
 
     // --- タッチ操作用変数 ---
     let lastTouchDist = null;
     let lastTouchAngle = null;
-
     canvas.addEventListener('touchstart', e => {
       if (!uploadedImg) return;
 
