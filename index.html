@@ -60,6 +60,31 @@
         width: 100%;
         height: auto;
       }
+      canvas {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        -webkit-region-break-inside: avoid;
+      }
+    }
+
+    #go-to-form {
+      font-size: 18px;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.3s;
+      margin-top: 20px;
+    }
+
+    #go-to-form:hover {
+      background-color: #45a049;
+    }
+
+    #go-to-form:active {
+      transform: scale(0.96);
     }
   </style>
 </head>
@@ -85,7 +110,7 @@
   <input type="file" id="imageLoader" accept="image/*" />
   <br />
   <p id="reuploadNotice"
-     data-ja="※画像は何度でも選び直せます。"
+     data-ja="※ファイル画像は何度でも選び直せます。"
      data-en="※ You can re-select the image as many times as you like."
      data-zh="※ 您可以多次重新选择图片。"
      data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다."
