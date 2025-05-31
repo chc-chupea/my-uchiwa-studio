@@ -325,10 +325,8 @@
       const min = String(now.getMinutes()).padStart(2, '0');
       const slot = Math.floor(parseInt(min) / 30) * 30;
       const slotStr = String(slot).padStart(2, '0');
-      const rand = Math.floor(Math.random() * 900) + 100;
-      return `uchiwa_${y}${m}${d}_${h}${slotStr}_${rand}.jpg`;
+      return `uchiwa_${y}${m}${d}_${h}${slotStr}.png`;
     }
-
 
     // 📌 フォームへ進むボタンクリック時の処理
     document.getElementById('go-to-form').addEventListener('click', function () {
