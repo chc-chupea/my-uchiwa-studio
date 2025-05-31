@@ -86,6 +86,7 @@
   <br />
   <button id="saveBtn">💾 保存する</button>
   <p id="notice"></p>
+  <div id="saveInstructions" style="font-size: 12px; color: #333; margin-top: 10px;"></div>
 
   <div id="canvasWrapper">
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
@@ -107,6 +108,29 @@
   </footer>
 
   <script>
+    const saveInstructionsTexts = {
+      ja: `※「uchiwa_20250726_xxx_xxx.png を保存しますか？」という表示が出たら<br>
+    iPhoneをご利用の方は以下を参考にしてください<br>
+    ・「ファイル」アプリで管理している方 → <span style="color: red;">「ダウンロード」</span>を選択<br>
+    ・「写真」アプリに保存したい方 → 「表示」を押して画像を長押し →<span style="color: red;">「“写真”に追加」</span> を選んで保存してください。保存後は、画面左下にある 「<span style="color: blue;">＜</span>」ボタン（または「Safari」のアイコン）を押すと元の画面に戻れます。`,
+      en: `※ When asked "Save uchiwa_20250726_xxx_xxx.png?",<br>
+    If you use iPhone, please refer below:<br>
+    - For those managing files via "Files" app → select <span style="color: red;">"Download"</span><br>
+    - To save to "Photos" app → tap "View", then long-press the image → select <span style="color: red;">"Add to Photos"</span>. After saving, press the <span style="color: blue;">"＜"</span> button (or Safari icon) at bottom left to return.`,
+      zh: `※ 当出现“要保存 uchiwa_20250726_xxx_xxx.png 吗？”的提示时，<br>
+    如果您使用 iPhone，请参考以下内容：<br>
+    ・通过“文件”应用管理的用户 → 选择 <span style="color: red;">“下载”</span><br>
+    ・想保存到“照片”应用的用户 → 点击“显示”，长按图片 → 选择 <span style="color: red;">“添加到照片”</span>。保存后，点击左下角的 <span style="color: blue;">“＜”</span> 按钮（或 Safari 图标）返回。`,
+      ko: `※ "uchiwa_20250726_xxx_xxx.png를 저장하시겠습니까?"라는 메시지가 표시되면,<br>
+    iPhone을 사용 중인 경우 다음을 참고하세요:<br>
+    - "파일" 앱으로 관리하는 경우 → <span style="color: red;">"다운로드"</span> 선택<br>
+    - "사진" 앱에 저장하려면 → "보기"를 누른 후 이미지 길게 누르기 → <span style="color: red;">"사진에 추가"</span> 선택. 저장 후 왼쪽 하단의 <span style="color: blue;">"＜"</span> 버튼(또는 Safari 아이콘)으로 돌아가기.`,
+      vi: `※ Khi xuất hiện thông báo "Lưu uchiwa_20250726_xxx_xxx.png?",<br>
+    Nếu bạn dùng iPhone, hãy làm theo hướng dẫn sau:<br>
+    - Quản lý bằng ứng dụng "Tệp" → chọn <span style="color: red;">"Tải xuống"</span><br>
+    - Muốn lưu vào ứng dụng "Ảnh" → nhấn "Hiển thị", giữ ảnh lâu → chọn <span style="color: red;">"Thêm vào Ảnh"</span>. Sau khi lưu, nhấn nút <span style="color: blue;">"＜"</span> ở góc dưới bên trái (hoặc biểu tượng Safari) để quay lại.`,
+    };
+
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
     let uploadedImg = null;
@@ -281,8 +305,17 @@
           el.innerHTML = el.dataset[lang];
         }
       });
+
+      // 保存説明文を切り替える
+      const instructionEl = document.getElementById('saveInstructions');
+      if (saveInstructionsTexts[lang]) {
+        instructionEl.innerHTML = saveInstructionsTexts[lang];
+      } else {
+        instructionEl.innerHTML = saveInstructionsTexts['ja']; // デフォルト日本語
+      }
     }
 
+    
     function getTimestampBasedFileName() {
       const now = new Date();
       const y = now.getFullYear();
@@ -305,6 +338,15 @@
         setTimeout(() => {
             document.getElementById('manual-link').style.display = 'block';
         }, 5000);
+    });
+    
+    window.addEventListener('load', () => {
+      const userLang = navigator.language || navigator.userLanguage;
+      if (userLang.startsWith('en')) setLanguage('en');
+      else if (userLang.startsWith('zh')) setLanguage('zh');
+      else if (userLang.startsWith('ko')) setLanguage('ko');
+      else if (userLang.startsWith('vi')) setLanguage('vi');
+      else setLanguage('ja');
     });
   </script>
 </body>
