@@ -1,53 +1,148 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <title>Myうちわ - アップロード版</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Myうちわ — アップロード版（長押し保存プレビュー付き）</title>
   <style>
-    body { font-family: sans-serif; text-align: center; background-color: #f9f9f9; margin: 0; padding: 10px; }
-    #canvasWrapper { position: relative; width: 100%; max-width: 900px; aspect-ratio: 4 / 3; margin: 0 auto; background-color: #f4f4f4; }
-    #mainCanvas { width: 100%; height: auto; background-color: white; touch-action: none; }
-    #templateSelector, #imageLoader, #saveBtn { margin-top: 10px; font-size: 14px; }
-    .form-button { background:#45a049; color:white; padding:8px 12px; border-radius:8px; border:none; }
-    button { cursor: pointer; }
-    #previewImage { max-width: 100%; height: auto; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 10px;
+    }
+    #canvasWrapper {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 4 / 3;
+      margin: 0 auto;
+      background-color: #f4f4f4;
+    }
+    #mainCanvas {
+      width: 100%;
+      height: auto;
+      background-color: white;
+      touch-action: none;
+    }
+    #templateSelector, #imageLoader, #saveBtn {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+
+    #imageLoader {
+      font-size: 16px;      /* 文字サイズを大きく */
+    }
+
+    #langButtons button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #notice {
+      margin-top: 10px;
+      font-size: 12px;
+      color: green;
+    }
+
+    h1#title {
+      font-size: 16px;
+    }
+
+    @media print {
+      body *:not(.fan-print) {
+        display: none !important;
+      }
+      #mainCanvas {
+        width: 100%;
+        height: auto;
+      }
+      canvas {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        -webkit-region-break-inside: avoid;
+      }
+    }
+
+    #go-to-form {
+      font-size: 18px;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.3s;
+      margin-top: 20px;
+    }
+
+    #go-to-form:hover {
+      background-color: #45a049;
+    }
+
+    #go-to-form:active {
+      transform: scale(0.96);
+    }
   </style>
 </head>
 <body>
-  <h1 data-ja="Myうちわ — アップロード版">Myうちわ — アップロード版</h1>
+  <div id="langButtons">
+    <button onclick="setLanguage('ja')">日本語</button>
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('zh')">中文</button>
+    <button onclick="setLanguage('ko')">한국어</button>
+    <button onclick="setLanguage('vi')">Tiếng Việt</button>
+  </div>
 
-  <p style="font-size:12px; color:#666;" data-ja="スマホの写真をアップロードして、テンプレートと合成した画像を長押しで保存できます。">スマホの写真をアップロードして、テンプレートと合成した画像を長押しで保存できます。</p>
+  <h1 id="title" data-ja="作っちゃおう！Myうちわ" data-en="Let's Make Our Own Fan!" data-zh="一起来制作我们的团扇！" data-ko="우리만의 부채를 만들어보자!" data-vi="Hãy cùng làm quạt giấy của riêng mình!">作っちゃおう！Myうちわ</h1>
+
+  <label id="templateLabel" data-ja="うちわのデザインを選んでね👉" data-en="Choose a fan design👉" data-zh="请选择一个团扇设计👉" data-ko="부채 디자인을 선택하세요👉" data-vi="Chọn thiết kế quạt👉">うちわのデザインを選んでね👉</label>
+  <select id="templateSelector">
+    <option value="fan1-highres.png">無地</option>
+    <option value="fan2-highres.png">夏祭り①</option>
+    <option value="fan3-highres.png">夏祭り②</option>
+  </select>
+
+  <br />
+  <input type="file" id="imageLoader" accept="image/*" />
+  <br />
+  <p id="reuploadNotice"
+     data-ja="※ファイル画像は何度でも選び直せます。<br>画像は指で動かせます。つまんで大きさを変え、2本の指で回します。"
+     data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
+     data-zh="※ 您可以多次重新选择图片。用手指移动图片，捏合缩放，两指旋转。"
+     data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다.손가락으로 이미지 이동, 집어서 확대·축소, 두 손가락으로 회전."
+     data-vi="※ Bạn có thể chọn lại ảnh bao nhiêu lần cũng được. Dùng tay di chuyển ảnh, chụm để phóng to, hai ngón tay xoay."
+     style="font-size: 12px; color: #666;"></p>
 
   <div id="canvasWrapper">
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
   </div>
 
-  <!-- プレビュー領域（保存は長押し） -->
-  <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
-    <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
-    <div style="margin-top:10px;">
-      <a id="openImageBtn" href="#" target="_blank" class="form-button" style="display:none; padding:8px 14px; font-size:14px; border-radius:8px; margin-right:8px; text-decoration:none;">🔍 大きく表示（新しいタブ）</a>
-    </div>
-  </div>
-
-  <button id="saveBtn" class="form-button">💾 保存する</button>
+  <button id="saveBtn">💾 保存する</button>
   <p id="notice"></p>
   <div id="saveInstructions" style="font-size: 12px; color: #333; margin-top: 10px;"></div>
 
+
+
+  <!-- 注文フォームへ進むボタン（最初は非表示） -->
   <br>
-  <button id="go-to-form" style="display:inline-block; margin-top:10px;">📝 注文フォームへ進む</button>
+  <button id="go-to-form">📝 注文フォームへ進む</button>
 
-  <div id="manual-link" style="display: none; margin-top:8px;"></div>
+  <!-- 手動リンク（失敗時の表示用、最初は非表示） -->
+  <div id="manual-link" style="display: none; margin-top: 10px;">
+    フォームに進めない場合は <a href="https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform?usp=header" target="_blank">こちら</a> をクリックしてください。
+  </div>
 
-  <input type="file" id="imageLoader" accept="image/*" style="margin-top:12px;" />
-  <select id="templateSelector" style="margin-top:12px;">
-    <option value="fan1-highres.png">うちわテンプレートA（高解像度）</option>
-    <option value="fan2-highres.png">うちわテンプレートB（高解像度）</option>
-    <option value="fan3-highres.png">うちわテンプレートB（高解像度）</option>
-  </select>
+  <footer style="font-size: 6px; color: #888; margin-top: 20px;">
+    © 2025 Chugoku Shimbun Hanbai Center. Web application developed by Hitomi Sasaki. All rights reserved.<br>
+    このウェブアプリケーションは、株式会社中国新聞販売センターの従業員による地域イベント向けの自主開発プロジェクトです。<br>
+    ※本アプリは公式サービスではありませんが、業務との親和性を考慮して使用されています。
+  </footer>
 
-<script>
+  <script>
     const saveWarningTexts = {
       ja: '⚠️ まだファイルが選ばれていません。うちわに使う画像を選んでください。',
       en: '⚠️ No file selected yet. Please upload an image.',
@@ -57,173 +152,210 @@
     };
 
     const saveInstructionsTexts = {
-      ja: `※ 保存方法：プレビュー画像を長押しして「写真に追加」または「画像を保存」を選んでください。`,
-      en: `※ Save: Long-press the preview image and choose "Save Image" or similar.`,
-      zh: `※ 保存方式：长按预览图片，选择“保存图片”或“添加到照片”。`,
-      ko: `※ 저장 방법: 미리보기 이미지를 길게 눌러 "이미지 저장"을 선택하세요.`,
-      vi: `※ Lưu: Nhấn và giữ ảnh xem trước rồi chọn "Lưu ảnh".`,
+      ja: `※「uchiwa_20250726_xxx_xxx.png を保存しますか？」という表示が出たら<br>
+    iPhoneをご利用の方は以下を参考にしてください<br>
+    ・「ファイル」アプリで管理している方 → <span style="color: red;">「ダウンロード」</span>を選択<br>
+    ・「写真」アプリに保存したい方 → 「表示」を押して画像を長押し →<span style="color: red;">「“写真”に追加」</span> を選んで保存してください。保存後は、画面左下にある 「<span style="color: blue;">＜</span>」ボタン（または「ブラウザ」のアイコン）を押すと元の画面に戻れます。`,
+      en: `※ When asked "Save uchiwa_20250726_xxx_xxx.png?",<br>
+    If you use iPhone, please refer below:<br>
+    - For those managing files via "Files" app → select <span style="color: red;">"Download"</span><br>
+    - To save to "Photos" app → tap "View", then long-press the image → select <span style="color: red;">"Add to Photos"</span>. After saving, press the <span style="color: blue;">"＜"</span> button (or Safari icon) at bottom left to return.`,
+      zh: `※ 当出现“要保存 uchiwa_20250726_xxx_xxx.png 吗？”的提示时，<br>
+    如果您使用 iPhone，请参考以下内容：<br>
+    ・通过“文件”应用管理的用户 → 选择 <span style="color: red;">“下载”</span><br>
+    ・想保存到“照片”应用的用户 → 点击“显示”，长按图片 → 选择 <span style="color: red;">“添加到照片”</span>。保存后，点击左下角的 <span style="color: blue;">“＜”</span> 按钮（或 Safari 图标）返回。`,
+      ko: `※ "uchiwa_20250726_xxx_xxx.png를 저장하시겠습니까?"라는 메시지가 표시되면,<br>
+    iPhone을 사용 중인 경우 다음을 참고하세요:<br>
+    - "파일" 앱으로 관리하는 경우 → <span style="color: red;">"다운로드"</span> 선택<br>
+    - "사진" 앱에 저장하려면 → "보기"를 누른 후 이미지 길게 누르기 → <span style="color: red;">"사진에 추가"</span> 선택. 저장 후 왼쪽 하단의 <span style="color: blue;">"＜"</span> 버튼(또는 Safari 아이콘)으로 돌아가기.`,
+      vi: `※ Khi xuất hiện thông báo "Lưu uchiwa_20250726_xxx_xxx.png?",<br>
+    Nếu bạn dùng iPhone, hãy làm theo hướng dẫn sau:<br>
+    - Quản lý bằng ứng dụng "Tệp" → chọn <span style="color: red;">"Tải xuống"</span><br>
+    - Muốn lưu vào ứng dụng "Ảnh" → nhấn "Hiển thị", giữ ảnh lâu → chọn <span style="color: red;">"Thêm vào Ảnh"</span>. Sau khi lưu, nhấn nút <span style="color: blue;">"＜"</span> ở góc dưới bên trái (hoặc biểu tượng Safari) để quay lại.`,
     };
-
-    // 現在の言語コード
-    let currentLang = 'ja';
 
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
     let uploadedImg = null;
-    let imgX = 100, imgY = 100, imgScale = 1, rotation = 0;
+    let imgX = 100, imgY = 100, scale = 1, rotation = 0;
+    let isDragging = false, lastX, lastY;
 
     const templateSelector = document.getElementById('templateSelector');
+    let templateImg = new Image();
+    templateImg.src = templateSelector.value;
 
-    // 画像ファイル選択処理
-    document.getElementById('imageLoader').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        uploadedImg = img;
-        // 初期位置/スケール調整
-        imgScale = Math.min(canvas.width / img.width, canvas.height / img.height) * 0.9;
-        imgX = (canvas.width - img.width * imgScale) / 2;
-        imgY = (canvas.height - img.height * imgScale) / 2;
-        draw();
-        URL.revokeObjectURL(url);
-      };
-      img.src = url;
-    });
-
-    // テンプレート読み込み（簡易）
-    const templateImg = new Image();
-    templateImg.src = templateSelector.value; // select の value にファイル名を入れておく
     templateSelector.addEventListener('change', () => {
       templateImg.src = templateSelector.value;
+      draw();
     });
 
     templateImg.onload = () => draw();
 
-    // 描画
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // 背景白
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      // アップロード画像を描画（位置・スケール・回転）
       if (uploadedImg) {
         ctx.save();
-        // transform 用に中心を移動
-        const cx = imgX + (uploadedImg.width * imgScale) / 2;
-        const cy = imgY + (uploadedImg.height * imgScale) / 2;
-        ctx.translate(cx, cy);
+        ctx.translate(imgX, imgY);
         ctx.rotate(rotation);
-        ctx.translate(-cx, -cy);
-        ctx.drawImage(uploadedImg, imgX, imgY, uploadedImg.width * imgScale, uploadedImg.height * imgScale);
+        ctx.scale(scale, scale);
+        ctx.drawImage(uploadedImg, -uploadedImg.width / 2, -uploadedImg.height / 2);
         ctx.restore();
       }
-
-      // テンプレートを最前面に描画
       if (templateImg.complete) {
         ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
       }
     }
 
-    // 簡易操作（キーボードでのテスト用）
-    window.addEventListener('keydown', (e) => {
-      if (e.key === '+' || e.key === '=') { imgScale *= 1.05; draw(); }
-      if (e.key === '-') { imgScale /= 1.05; draw(); }
+    document.getElementById('imageLoader').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        uploadedImg = new Image();
+        uploadedImg.onload = () => {
+          imgX = canvas.width / 2;
+          imgY = canvas.height / 2;
+          scale = 1;
+          rotation = 0;
+          draw();
+        };
+        uploadedImg.src = event.target.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      lastX = e.offsetX;
+      lastY = e.offsetY;
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      if (isDragging && uploadedImg) {
+        imgX += e.offsetX - lastX;
+        imgY += e.offsetY - lastY;
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        draw();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('wheel', e => {
+      if (uploadedImg) {
+        scale += e.deltaY * -0.001;
+        scale = Math.max(0.1, Math.min(5, scale));
+        draw();
+      }
+      e.preventDefault();
+    });
+
+    // ←→キーで回転
+    window.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft') rotation -= 0.05;
       if (e.key === 'ArrowRight') rotation += 0.05;
       draw();
     });
 
-    // ---------- 保存ボタンの新しい処理（プレビュー表示 + 長押し保存） ----------
+    // ✅ PNG形式で保存
     document.getElementById('saveBtn').addEventListener('click', () => {
       const noticeEl = document.getElementById('notice');
 
       if (!uploadedImg) {
         noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
         noticeEl.style.color = 'red';
+
         setTimeout(() => {
           noticeEl.textContent = '';
-          noticeEl.style.color = 'green';
+          noticeEl.style.color = 'green'; // 元に戻す
         }, 3000);
         return;
       }
 
-      // canvas を Blob にしてプレビュー表示（長押しで保存する方式）
       canvas.toBlob(blob => {
-        if (!blob) {
-          noticeEl.textContent = '画像作成に失敗しました。もう一度お試しください。';
-          noticeEl.style.color = 'red';
-          return;
-        }
-
-        // 前の object URL があれば解放
-        if (window._lastPreviewURL) {
-          try { URL.revokeObjectURL(window._lastPreviewURL); } catch (e) {}
-          window._lastPreviewURL = null;
-        }
-
+        const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
-        window._lastPreviewURL = url;
-
-        // プレビュー要素を表示
-        const previewWrapper = document.getElementById('previewWrapper');
-        const previewImg = document.getElementById('previewImage');
-        const openBtn = document.getElementById('openImageBtn');
-
-        if (previewImg) previewImg.src = url;
-        if (previewWrapper) previewWrapper.style.display = 'block';
-
-        // iPhone/Android 向けの案内を出す
-        noticeEl.style.display = 'block';
-        noticeEl.style.color = 'black';
-        noticeEl.innerHTML = `
-          iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
-          Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
-          保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
-        `;
-
-        // 「新しいタブで表示」ボタンを blob URL に設定（任意）
-        if (openBtn) {
-          openBtn.href = url;
-          openBtn.download = getTimestampBasedFileName();
-          openBtn.style.display = 'inline-block';
-        }
-
-        // スクロールして目立たせる
-        if (previewWrapper) previewWrapper.scrollIntoView({ behavior: 'smooth' });
-
-      }, 'image/png'); // PNG で生成
+        link.href = url;
+        link.download = getTimestampBasedFileName().replace('.jpg', '.png'); // PNG拡張子に変更
+        link.click();
+        document.getElementById('notice').textContent = '注文フォームへ進んでください';
+        document.getElementById('go-to-form').scrollIntoView({ behavior: 'smooth' });
+      }, 'image/png'); // ← PNG形式を指定
     });
-    // -------------------------------------------------------------------
 
-    // 簡易タッチ操作（ピンチ／パン／回転は既存のライブラリか追加実装を推奨）
-    let isDragging = false, startX = 0, startY = 0;
-    canvas.addEventListener('touchstart', (e) => {
+    // --- タッチ操作用変数 ---
+    let lastTouchDist = null;
+    let lastTouchAngle = null;
+    canvas.addEventListener('touchstart', e => {
+      if (!uploadedImg) return;
+
       if (e.touches.length === 1) {
         isDragging = true;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
       }
+
+      if (e.touches.length === 2) {
+        isDragging = false;
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        lastTouchDist = Math.hypot(dx, dy);
+        lastTouchAngle = Math.atan2(dy, dx);
+      }
+
+      e.preventDefault();
     });
-    canvas.addEventListener('touchmove', (e) => {
-      if (isDragging && e.touches.length === 1) {
-        const dx = e.touches[0].clientX - startX;
-        const dy = e.touches[0].clientY - startY;
-        imgX += dx * (canvas.width / canvas.getBoundingClientRect().width);
-        imgY += dy * (canvas.height / canvas.getBoundingClientRect().height);
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
+
+    canvas.addEventListener('touchmove', e => {
+      if (!uploadedImg) return;
+
+      if (e.touches.length === 1 && isDragging) {
+        const dx = e.touches[0].clientX - lastX;
+        const dy = e.touches[0].clientY - lastY;
+        imgX += dx;
+        imgY += dy;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
         draw();
       }
-    });
-    canvas.addEventListener('touchend', (e) => { isDragging = false; });
 
-    // 言語切替（簡易）
+      if (e.touches.length === 2) {
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        const newDist = Math.hypot(dx, dy);
+        const newAngle = Math.atan2(dy, dx);
+
+        // スケーリング
+        if (lastTouchDist !== null) {
+          const scaleChange = newDist / lastTouchDist;
+          scale *= scaleChange;
+          scale = Math.max(0.1, Math.min(5, scale));
+        }
+
+        // 回転
+        if (lastTouchAngle !== null) {
+          const angleChange = newAngle - lastTouchAngle;
+          rotation += angleChange;
+        }
+
+        lastTouchDist = newDist;
+        lastTouchAngle = newAngle;
+        draw();
+      }
+
+      e.preventDefault();
+    });
+
+    canvas.addEventListener('touchend', e => {
+      if (e.touches.length < 2) {
+        lastTouchDist = null;
+        lastTouchAngle = null;
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+      }
+      e.preventDefault();
+    });
+
     function setLanguage(lang) {
-      // 現在の言語を設定
-      currentLang = lang;
       document.querySelectorAll('[data-ja]').forEach(el => {
         if (el.dataset[lang]) {
           el.innerHTML = el.dataset[lang];
@@ -239,7 +371,7 @@
       }
     }
 
-    // ファイル名生成
+    
     function getTimestampBasedFileName() {
       const now = new Date();
       const y = now.getFullYear();
@@ -252,15 +384,24 @@
       return `uchiwa_${y}${m}${d}_${h}${slotStr}.png`;
     }
 
-    // 注文フォームへの遷移ボタン
-    document.getElementById('go-to-form').addEventListener('click', () => {
-      // 実際のフォームURLをここに置き換えてください
-      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform";
-      window.open(formUrl, '_blank');
-    });
+    // 📌 フォームへ進むボタンクリック時の処理
+    document.getElementById('go-to-form').addEventListener('click', function () {
+        window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform";
 
-    // 初期呼び出し
-    draw();
-</script>
+        // 念のため5秒後に手動リンクを表示
+        setTimeout(() => {
+            document.getElementById('manual-link').style.display = 'block';
+        }, 5000);
+    });
+    
+    window.addEventListener('load', () => {
+      const userLang = navigator.language || navigator.userLanguage;
+      if (userLang.startsWith('en')) setLanguage('en');
+      else if (userLang.startsWith('zh')) setLanguage('zh');
+      else if (userLang.startsWith('ko')) setLanguage('ko');
+      else if (userLang.startsWith('vi')) setLanguage('vi');
+      else setLanguage('ja');
+    });
+  </script>
 </body>
 </html>
