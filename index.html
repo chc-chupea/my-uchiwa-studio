@@ -126,6 +126,21 @@
   <div id="saveInstructions" style="font-size: 12px; color: #333; margin-top: 10px;"></div>
 
 
+  <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
+    <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
+    <div style="margin-top:10px;">
+      <!-- 新しいタブで開く／大きく表示するためのボタン（必要なら使う） -->
+      <a id="openImageBtn" href="#" target="_blank" class="form-button" style="display:inline-block; padding:8px 14px; font-size:14px; border-radius:8px; margin-right:8px; text-decoration:none;">
+        🔍 大きく表示（新しいタブ）
+      </a>
+    </div>
+  </div>
+
+
+
+
+
+
 
   <!-- 注文フォームへ進むボタン（最初は非表示） -->
   <br>
@@ -255,31 +270,68 @@
       draw();
     });
 
-    // ✅ PNG形式で保存
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const noticeEl = document.getElementById('notice');
+// ---------- 保存ボタンの新しい処理（ここに置き換える） ----------
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const noticeEl = document.getElementById('notice');
 
-      if (!uploadedImg) {
-        noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
-        noticeEl.style.color = 'red';
+  if (!uploadedImg) {
+    noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
+    noticeEl.style.color = 'red';
+    setTimeout(() => {
+      noticeEl.textContent = '';
+      noticeEl.style.color = 'green';
+    }, 3000);
+    return;
+  }
 
-        setTimeout(() => {
-          noticeEl.textContent = '';
-          noticeEl.style.color = 'green'; // 元に戻す
-        }, 3000);
-        return;
-      }
+  // canvas を Blob にしてプレビュー表示（長押しで保存する方式）
+  canvas.toBlob(blob => {
+    if (!blob) {
+      noticeEl.textContent = '画像作成に失敗しました。もう一度お試しください。';
+      noticeEl.style.color = 'red';
+      return;
+    }
 
-      canvas.toBlob(blob => {
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.download = getTimestampBasedFileName().replace('.jpg', '.png'); // PNG拡張子に変更
-        link.click();
-        document.getElementById('notice').textContent = '注文フォームへ進んでください';
-        document.getElementById('go-to-form').scrollIntoView({ behavior: 'smooth' });
-      }, 'image/png'); // ← PNG形式を指定
-    });
+    // 前の object URL があれば解放
+    if (window._lastPreviewURL) {
+      try { URL.revokeObjectURL(window._lastPreviewURL); } catch (e) {}
+      window._lastPreviewURL = null;
+    }
+
+    const url = URL.createObjectURL(blob);
+    window._lastPreviewURL = url;
+
+    // プレビュー要素を表示
+    const previewWrapper = document.getElementById('previewWrapper');
+    const previewImg = document.getElementById('previewImage');
+    const openBtn = document.getElementById('openImageBtn');
+
+    previewImg.src = url;
+    previewWrapper.style.display = 'block';
+
+    // iPhone/Android 向けの案内を出す
+    noticeEl.style.display = 'block';
+    noticeEl.style.color = 'black';
+    noticeEl.innerHTML = `
+      iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
+      Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
+      保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
+    `;
+
+    // 「新しいタブで表示」ボタンを blob URL に設定（任意）
+    if (openBtn) {
+      openBtn.href = url;
+      // filename を付けるとダイアログでわかりやすい（端末依存）
+      openBtn.download = getTimestampBasedFileName();
+      openBtn.style.display = 'inline-block';
+    }
+
+    // スクロールして目立たせる
+    previewWrapper.scrollIntoView({ behavior: 'smooth' });
+
+  }, 'image/png'); // PNG で生成
+});
+// -------------------------------------------------------------------
 
     // --- タッチ操作用変数 ---
     let lastTouchDist = null;
