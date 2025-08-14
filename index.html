@@ -107,8 +107,14 @@
   </select>
 
   <br />
-  <input type="file" id="imageLoader" accept="image/*" />
+
+  <label for="imageLoader" style="font-weight:bold;">
+  📷 写真を撮る／ライブラリから選ぶ
+  </label>
+  <input type="file" id="imageLoader" accept="image/*" capture="environment">
   <br />
+
+
   <p id="reuploadNotice"
      data-ja="※ファイル画像は何度でも選び直せます。<br>画像は指で動かせます。つまんで大きさを変え、2本の指で回します。"
      data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
