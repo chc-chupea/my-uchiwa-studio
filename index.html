@@ -107,40 +107,14 @@
   </select>
 
   <br />
-  <input type="file" id="imageLoader" accept="image/*" capture="environment" />
+  <input type="file" id="imageLoader" accept="image/*" />
   <br />
-
-  <button id="openCameraBtn">📷 カメラで撮る（高解像度）</button>
-
-  <div id="cameraPanel" hidden style="margin-top:10px;">
-    <video id="cameraPreview" playsinline autoplay
-           style="width:100%;max-width:900px;background:#000;border-radius:8px;"></video>
-    <div style="margin-top:8px;">
-      <!-- 端末に複数カメラがある場合の切り替え用（任意） -->
-      <select id="cameraSelect" style="max-width:90%;"></select>
-    </div>
-    <div style="margin-top:10px; display:flex; gap:8px; justify-content:center;">
-      <button id="snapBtn">このカメラで撮る</button>
-      <button id="closeCamBtn">閉じる</button>
-    </div>
-  </div>
-
   <p id="reuploadNotice"
-     data-ja="※スマホに入っている写真や、今カメラで撮った写真もOK！<br>
-     高解像度でA4サイズのうちわが簡単に作れます。<br>
-     画像は何度でも選び直せます。指で動かし、大きさや角度も自由に調整できます。"
-     data-en="※ You can use photos already on your phone or take a new one with your camera!<br>
-     Easily create a high-resolution A4-size fan.<br>
-     You can re-select the image anytime, move it with your finger, and freely adjust size and angle."
-     data-zh="※ 您可以使用手机里的照片，或直接拍照！<br>
-     轻松制作高清A4尺寸的团扇。<br>
-     可以随时重新选择图片，用手指移动、调整大小和角度。"
-     data-ko="※ 휴대폰에 있는 사진이나 지금 찍은 사진 모두 사용 가능!<br>
-     고해상도 A4 사이즈 부채를 쉽게 만들 수 있습니다.<br>
-     이미지는 언제든지 다시 선택 가능하며, 손가락으로 이동·크기·각도를 조정할 수 있습니다."
-     data-vi="※ Bạn có thể dùng ảnh trong điện thoại hoặc chụp mới bằng camera!<br>
-     Dễ dàng tạo quạt giấy kích thước A4 với độ phân giải cao.<br>
-     Có thể chọn lại ảnh bất cứ lúc nào, di chuyển, phóng to/thu nhỏ và xoay bằng ngón tay."
+     data-ja="※ファイル画像は何度でも選び直せます。<br>画像は指で動かせます。つまんで大きさを変え、2本の指で回します。"
+     data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
+     data-zh="※ 您可以多次重新选择图片。用手指移动图片，捏合缩放，两指旋转。"
+     data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다.손가락으로 이미지 이동, 집어서 확대·축소, 두 손가락으로 회전."
+     data-vi="※ Bạn có thể chọn lại ảnh bao nhiêu lần cũng được. Dùng tay di chuyển ảnh, chụm để phóng to, hai ngón tay xoay."
      style="font-size: 12px; color: #666;"></p>
 
   <div id="canvasWrapper">
@@ -188,36 +162,6 @@
       vi: '⚠️ Chưa chọn tệp. Vui lòng tải ảnh lên.',
     };
     
-
-    // 保存後のプレビュー案内（長押し保存）を多言語化
-    const previewNoticeTexts = {
-      ja: `
-        iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
-        Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
-        保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
-      `,
-      en: `
-        iPhone: 👆 Long-press the image and choose "Add to Photos" to save.<br><br>
-        Android: 👆 Long-press the image and choose "Save image".<br><br>
-        After saving, proceed via the "Go to order form" button below.
-      `,
-      zh: `
-        iPhone：👆长按图片，选择“添加到照片”保存。<br><br>
-        Android：👆长按图片，选择“保存图片”。<br><br>
-        保存后请点击下方“前往订单表单”继续。
-      `,
-      ko: `
-        iPhone: 이미지를 👆길게 눌러 “사진에 추가”를 선택해 저장하세요.<br><br>
-        Android: 이미지를 👆길게 눌러 “이미지 저장”을 선택하세요.<br><br>
-        저장이 끝나면 아래 “주문 폼으로 이동” 버튼으로 진행하세요.
-      `,
-      vi: `
-        iPhone: 👆 Nhấn giữ ảnh rồi chọn “Thêm vào Ảnh” để lưu.<br><br>
-        Android: 👆 Nhấn giữ ảnh rồi chọn “Lưu hình ảnh”.<br><br>
-        Sau khi lưu, bấm “Tiến tới form đặt hàng” bên dưới.
-      `
-    };
-
     let currentLang = 'ja'; // デフォルトは日本語
     
     const canvas = document.getElementById('mainCanvas');
@@ -251,164 +195,6 @@
         ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
       }
     }
-
-    // ====== カメラ撮影（高解像度リクエスト） ======
-    let camStream = null;
-    let camTrack = null;
-
-    async function openCamera() {
-      const panel = document.getElementById('cameraPanel');
-      const video = document.getElementById('cameraPreview');
-      const select = document.getElementById('cameraSelect');
-
-      // まずは背面＆高解像度を「要求」
-      const baseConstraints = {
-        video: {
-          facingMode: { ideal: 'environment' }, // 背面優先
-          width: { ideal: 4096 },               // 12MP クラスを“希望”
-          height: { ideal: 3072 },
-          frameRate: { ideal: 30 }
-        },
-        audio: false
-      };
-
-      try {
-        camStream = await navigator.mediaDevices.getUserMedia(baseConstraints);
-      } catch (e) {
-        // 失敗したら最小限の指定で再トライ（iOS Safari など）
-        camStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' } },
-          audio: false
-        });
-      }
-
-      // プレビュー開始
-      video.srcObject = camStream;
-      await video.play().catch(() => {});
-
-      // 可能なら「端末が許す最大解像度」に引き上げる
-      camTrack = camStream.getVideoTracks()[0];
-      try {
-        const caps = camTrack.getCapabilities && camTrack.getCapabilities();
-        if (caps && caps.width && caps.height) {
-          const maxW = caps.width.max || caps.width;
-          const maxH = caps.height.max || caps.height;
-          await camTrack.applyConstraints({
-            width: { ideal: maxW },
-            height: { ideal: maxH }
-          });
-        }
-      } catch (e) {
-        // iOS Safari などは何もしない
-      }
-
-      // （任意）利用可能なカメラをプルダウンに列挙して切替可に
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoInputs = devices.filter(d => d.kind === 'videoinput');
-        const currentId = camTrack.getSettings && camTrack.getSettings().deviceId;
-
-        select.innerHTML = '';
-        videoInputs.forEach((d, i) => {
-          const opt = document.createElement('option');
-          opt.value = d.deviceId;
-          opt.textContent = d.label || `カメラ ${i + 1}`;
-          if (currentId && d.deviceId === currentId) opt.selected = true;
-          select.appendChild(opt);
-        });
-
-        select.onchange = async () => {
-          await switchCamera(select.value);
-        };
-      } catch (e) {
-        // 権限前やSafariはlabelが出ないことあり
-      }
-
-      panel.hidden = false;
-    }
-
-    async function switchCamera(deviceId) {
-      // 既存ストリーム停止
-      if (camStream) camStream.getTracks().forEach(t => t.stop());
-
-      camStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: { exact: deviceId },
-          width: { ideal: 4096 },
-          height: { ideal: 3072 }
-        },
-        audio: false
-      });
-      const video = document.getElementById('cameraPreview');
-      video.srcObject = camStream;
-      camTrack = camStream.getVideoTracks()[0];
-    }
-
-    function closeCamera() {
-      if (camStream) camStream.getTracks().forEach(t => t.stop());
-      camStream = null;
-      camTrack = null;
-      document.getElementById('cameraPanel').hidden = true;
-    }
-
-    // 撮影：ImageCapture があれば“静止画フル解像度”、なければ video フレームを取得
-    async function snapPhoto() {
-      const noticeEl = document.getElementById('notice');
-      const video = document.getElementById('cameraPreview');
-
-      try {
-        // 1) ImageCapture でフル解像度静止画（Android Chrome で有効）
-        if ('ImageCapture' in window && camTrack) {
-          const ic = new ImageCapture(camTrack);
-          const blob = await ic.takePhoto().catch(() => null);
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const img = new Image();
-            img.onload = () => {
-              uploadedImg = img;            // 既存の描画ロジックに投入
-              imgX = canvas.width / 2;
-              imgY = canvas.height / 2;
-              scale = 1;
-              rotation = 0;
-              draw();
-              URL.revokeObjectURL(url);
-              closeCamera();
-            };
-            img.src = url;
-            return;
-          }
-        }
-
-        // 2) フォールバック：video のネイティブ解像度でフレームを取り込む
-        const off = document.createElement('canvas');
-        const w = video.videoWidth;
-        const h = video.videoHeight;
-        off.width = w;
-        off.height = h;
-        off.getContext('2d').drawImage(video, 0, 0, w, h);
-
-        const dataURL = off.toDataURL('image/jpeg', 0.95);
-        const img = new Image();
-        img.onload = () => {
-          uploadedImg = img;              // 既存の描画ロジックに投入
-          imgX = canvas.width / 2;
-          imgY = canvas.height / 2;
-          scale = 1;
-          rotation = 0;
-          draw();
-          closeCamera();
-        };
-        img.src = dataURL;
-      } catch (e) {
-        noticeEl.textContent = 'カメラからの取り込みに失敗しました。ファイル選択をご利用ください。';
-        noticeEl.style.color = 'red';
-      }
-    }
-
-    // ボタンをひも付け
-    document.getElementById('openCameraBtn')?.addEventListener('click', openCamera);
-    document.getElementById('snapBtn')?.addEventListener('click', snapPhoto);
-    document.getElementById('closeCamBtn')?.addEventListener('click', closeCamera);
 
     document.getElementById('imageLoader').addEventListener('change', function(e) {
       const reader = new FileReader();
@@ -497,7 +283,11 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     previewWrapper.style.display = 'block';
 
     const previewNotice = document.getElementById('previewNotice');
-    previewNotice.innerHTML = previewNoticeTexts[currentLang] || previewNoticeTexts['ja'];
+    previewNotice.innerHTML = `
+      iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
+      Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
+      保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
+    `;
 
     // スクロールして目立たせる
     previewWrapper.scrollIntoView({ behavior: 'smooth' });
