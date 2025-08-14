@@ -121,19 +121,13 @@
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
   </div>
 
-  <button id="saveBtn">💾 保存する</button>
+  <button id="saveBtn">📷決定</button>
   <p id="notice"></p>
   <div id="saveInstructions" style="font-size: 12px; color: #333; margin-top: 10px;"></div>
 
 
   <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
     <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
-    <div style="margin-top:10px;">
-      <!-- 新しいタブで開く／大きく表示するためのボタン（必要なら使う） -->
-      <a id="openImageBtn" href="#" target="_blank" class="form-button" style="display:inline-block; padding:8px 14px; font-size:14px; border-radius:8px; margin-right:8px; text-decoration:none;">
-        🔍 大きく表示（新しいタブ）
-      </a>
-    </div>
   </div>
 
 
@@ -164,29 +158,6 @@
       zh: '⚠️ 尚未选择文件，请上传图片。',
       ko: '⚠️ 아직 파일이 선택되지 않았습니다. 이미지를 업로드하세요.',
       vi: '⚠️ Chưa chọn tệp. Vui lòng tải ảnh lên.',
-    };
-
-    const saveInstructionsTexts = {
-      ja: `※「uchiwa_20250726_xxx_xxx.png を保存しますか？」という表示が出たら<br>
-    iPhoneをご利用の方は以下を参考にしてください<br>
-    ・「ファイル」アプリで管理している方 → <span style="color: red;">「ダウンロード」</span>を選択<br>
-    ・「写真」アプリに保存したい方 → 「表示」を押して画像を長押し →<span style="color: red;">「“写真”に追加」</span> を選んで保存してください。保存後は、画面左下にある 「<span style="color: blue;">＜</span>」ボタン（または「ブラウザ」のアイコン）を押すと元の画面に戻れます。`,
-      en: `※ When asked "Save uchiwa_20250726_xxx_xxx.png?",<br>
-    If you use iPhone, please refer below:<br>
-    - For those managing files via "Files" app → select <span style="color: red;">"Download"</span><br>
-    - To save to "Photos" app → tap "View", then long-press the image → select <span style="color: red;">"Add to Photos"</span>. After saving, press the <span style="color: blue;">"＜"</span> button (or Safari icon) at bottom left to return.`,
-      zh: `※ 当出现“要保存 uchiwa_20250726_xxx_xxx.png 吗？”的提示时，<br>
-    如果您使用 iPhone，请参考以下内容：<br>
-    ・通过“文件”应用管理的用户 → 选择 <span style="color: red;">“下载”</span><br>
-    ・想保存到“照片”应用的用户 → 点击“显示”，长按图片 → 选择 <span style="color: red;">“添加到照片”</span>。保存后，点击左下角的 <span style="color: blue;">“＜”</span> 按钮（或 Safari 图标）返回。`,
-      ko: `※ "uchiwa_20250726_xxx_xxx.png를 저장하시겠습니까?"라는 메시지가 표시되면,<br>
-    iPhone을 사용 중인 경우 다음을 참고하세요:<br>
-    - "파일" 앱으로 관리하는 경우 → <span style="color: red;">"다운로드"</span> 선택<br>
-    - "사진" 앱에 저장하려면 → "보기"를 누른 후 이미지 길게 누르기 → <span style="color: red;">"사진에 추가"</span> 선택. 저장 후 왼쪽 하단의 <span style="color: blue;">"＜"</span> 버튼(또는 Safari 아이콘)으로 돌아가기.`,
-      vi: `※ Khi xuất hiện thông báo "Lưu uchiwa_20250726_xxx_xxx.png?",<br>
-    Nếu bạn dùng iPhone, hãy làm theo hướng dẫn sau:<br>
-    - Quản lý bằng ứng dụng "Tệp" → chọn <span style="color: red;">"Tải xuống"</span><br>
-    - Muốn lưu vào ứng dụng "Ảnh" → nhấn "Hiển thị", giữ ảnh lâu → chọn <span style="color: red;">"Thêm vào Ảnh"</span>. Sau khi lưu, nhấn nút <span style="color: blue;">"＜"</span> ở góc dưới bên trái (hoặc biểu tượng Safari) để quay lại.`,
     };
 
     const canvas = document.getElementById('mainCanvas');
@@ -304,8 +275,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     // プレビュー要素を表示
     const previewWrapper = document.getElementById('previewWrapper');
     const previewImg = document.getElementById('previewImage');
-    const openBtn = document.getElementById('openImageBtn');
-
     previewImg.src = url;
     previewWrapper.style.display = 'block';
 
@@ -317,14 +286,6 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
       保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
     `;
-
-    // 「新しいタブで表示」ボタンを blob URL に設定（任意）
-    if (openBtn) {
-      openBtn.href = url;
-      // filename を付けるとダイアログでわかりやすい（端末依存）
-      openBtn.download = getTimestampBasedFileName();
-      openBtn.style.display = 'inline-block';
-    }
 
     // スクロールして目立たせる
     previewWrapper.scrollIntoView({ behavior: 'smooth' });
