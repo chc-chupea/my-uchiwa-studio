@@ -107,7 +107,15 @@
   </select>
 
   <br />
-  <input type="file" id="imageLoader" accept="image/*" />
+  <!-- 変更前 -->
+  <!-- <input type="file" id="imageLoader" accept="image/*" /> -->
+
+  <!-- 変更後 -->
+  <label for="imageLoader" id="customFileLabel" 
+         style="display:inline-block; padding:8px 16px; background:#2196F3; color:white; border-radius:6px; cursor:pointer; font-size:16px;">
+    📷 写真を撮る／ライブラリから選ぶ
+  </label>
+  <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
   <br />
   <p id="reuploadNotice"
      data-ja="※ファイル画像は何度でも選び直せます。<br>画像は指で動かせます。つまんで大きさを変え、2本の指で回します。"
