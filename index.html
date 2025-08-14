@@ -130,7 +130,9 @@
     <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
   </div>
 
-
+  <!-- ここが新しい案内文表示領域 -->
+  <div id="previewNotice" style="font-size:14px; color:black; margin-top:10px;"></div>
+</div>
 
 
 
@@ -278,10 +280,8 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     previewImg.src = url;
     previewWrapper.style.display = 'block';
 
-    // iPhone/Android 向けの案内を出す
-    noticeEl.style.display = 'block';
-    noticeEl.style.color = 'black';
-    noticeEl.innerHTML = `
+    const previewNotice = document.getElementById('previewNotice');
+    previewNotice.innerHTML = `
       iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
       Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
       保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。
