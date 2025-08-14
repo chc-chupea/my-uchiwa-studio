@@ -123,7 +123,7 @@
 
   <button id="saveBtn">📷決定</button>
   <p id="notice"></p>
-  <div id="saveInstructions" style="font-size: 12px; color: #333; margin-top: 10px;"></div>
+
 
 
   <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
@@ -371,19 +371,14 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     });
 
     function setLanguage(lang) {
+      currentLang = lang; // ← これを追加
+      
       document.querySelectorAll('[data-ja]').forEach(el => {
         if (el.dataset[lang]) {
           el.innerHTML = el.dataset[lang];
         }
       });
 
-      // 保存説明文を切り替える
-      const instructionEl = document.getElementById('saveInstructions');
-      if (saveInstructionsTexts[lang]) {
-        instructionEl.innerHTML = saveInstructionsTexts[lang];
-      } else {
-        instructionEl.innerHTML = saveInstructionsTexts['ja']; // デフォルト日本語
-      }
     }
 
     
