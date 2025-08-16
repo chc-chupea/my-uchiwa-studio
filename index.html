@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: 'M PLUS Rounded 1c', 'Kosugi Maru', sans-serif;
-      background: linear-gradient(135deg, #fff5f7, #e0f7ff);
+      background: linear-gradient(135deg, #fefefe, #e3f2fd); /* 明るい青系 */
       text-align: center;
       margin: 0;
       padding: 8px;
@@ -66,6 +66,23 @@
       box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
 
+    #previewWrapper {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      display: none;
+      margin: 20px auto;
+      max-width: 95%;
+    }
+
+    #previewNotice {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+    }
+
     #mainCanvas {
       width: 100%;
       height: auto;
@@ -97,7 +114,7 @@
       font-size: 28px;
       font-weight: bold;
       color: #ff4081; /* ピンク */
-      text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ffc107; /* 白＋黄色の影 */
+      text-shadow: 1px 1px 0 #fff, 2px 2px 4px rgba(0,0,0,0.2);
       margin: 20px 0;
     }
 
@@ -105,6 +122,10 @@
       body *:not(.fan-print) {
         display: none !important;
       }
+
+
+
+
       #mainCanvas {
         width: 100%;
         height: auto;
@@ -140,15 +161,32 @@
       font-size: 18px;  /* ←ここでサイズ変更 */
       font-weight: bold; /* 太字にしたい場合 */
       }
+
+    /* ←この下に追記 */
+    button {
+      background: #4cafef;
+      color: white;
+      font-size: 16px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.3s;
+    }
+    button:hover {
+      background: #2196f3;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
   <div id="langButtons">
-    <button onclick="setLanguage('ja')">日本語</button>
-    <button onclick="setLanguage('en')">English</button>
-    <button onclick="setLanguage('zh')">中文</button>
-    <button onclick="setLanguage('ko')">한국어</button>
-    <button onclick="setLanguage('vi')">Tiếng Việt</button>
+    <button onclick="setLanguage('ja')">🇯🇵JP</button>
+    <button onclick="setLanguage('en')">🇺🇸EN</button>
+    <button onclick="setLanguage('zh')">🇨🇳中文</button>
+    <button onclick="setLanguage('ko')">🇰🇷KO</button>
+    <button onclick="setLanguage('vi')">🇻🇳VIt</button>
   </div>
 
   <h1 id="title" data-ja="作っちゃおう！Myうちわ" data-en="Let's Make Our Own Fan!" data-zh="一起来制作我们的团扇！" data-ko="우리만의 부채를 만들어보자!" data-vi="Hãy cùng làm quạt giấy của riêng mình!">作っちゃおう！Myうちわ</h1>
