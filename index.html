@@ -1,17 +1,55 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>Myうちわ - アップロード版</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'M PLUS Rounded 1c', 'Kosugi Maru', sans-serif;
+      background: linear-gradient(135deg, #fff5f7, #e0f7ff); /* ピンク→水色のグラデーション */
       text-align: center;
-      background-color: #f9f9f9;
       margin: 0;
-      padding: 10px;
+      padding: 20px;
+      color: #333;
     }
+    
+    /* ←ここに追加 */
+    #customFileLabel {
+      background: #ff9800; /* オレンジ */
+      color: #fff;
+      border-radius: 30px;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.2s;
+      display: inline-block;
+      }
+    #customFileLabel:hover {
+      background: #e67e22; /* 濃いオレンジに変化 */
+      transform: scale(1.05);
+    }
+
+
+    #saveBtn, #go-to-form {
+      background: #4cafef;
+      color: white;
+      font-size: 18px;
+      padding: 14px 28px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      margin: 15px 0;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    #saveBtn:hover, #go-to-form:hover {
+      background: #2196f3;
+      transform: translateY(-3px);
+    }
+
     #canvasWrapper {
       position: relative;
       width: 100%;
@@ -20,6 +58,14 @@
       margin: 0 auto;
       background-color: #f4f4f4;
     }
+    
+    /* ←ここに追加 */
+    #previewWrapper img {
+      border: 6px solid #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
     #mainCanvas {
       width: 100%;
       height: auto;
@@ -30,7 +76,6 @@
       margin-top: 10px;
       font-size: 14px;
     }
-
 
     #imageLoader {
       font-size: 16px;      /* 文字サイズを大きく */
@@ -49,7 +94,11 @@
     }
 
     h1#title {
-      font-size: 16px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff4081; /* ピンク */
+      text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ffc107; /* 白＋黄色の影 */
+      margin: 20px 0;
     }
 
     @media print {
@@ -116,10 +165,10 @@
   <!-- <input type="file" id="imageLoader" accept="image/*" /> -->
 
   <!-- 変更後 -->
-  <label for="imageLoader" id="customFileLabel" 
-         style="display:inline-block; padding:8px 16px; background:#2196F3; color:white; border-radius:6px; cursor:pointer; font-size:16px;">
+  <label for="imageLoader" id="customFileLabel">
     📷 写真を撮る／ライブラリから選ぶ
   </label>
+
   <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
   <br />
   <p id="reuploadNotice"
