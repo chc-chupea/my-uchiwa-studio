@@ -1,566 +1,296 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>Myうちわ - アップロード版</title>
+  <title>Myうちわ - スマホ縦型デザイン版</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'M PLUS Rounded 1c', 'Kosugi Maru', sans-serif;
       background: linear-gradient(135deg, #f9fcff, #e3f2fd);
-      text-align: center;
       margin: 0;
-      padding: 8px;
+      padding: 12px;
       color: #333;
     }
-    
 
-    #saveBtn, #go-to-form {
-      background: #4cafef;
-      color: white;
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1565c0;
+      text-align: center;
+      margin: 16px 0 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      margin: 16px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 95%;
+    }
+
+    .card h2 {
       font-size: 18px;
-      padding: 14px 28px;
-      border-radius: 30px;
+      color: #1565c0;
+      margin-bottom: 12px;
+    }
+
+    select, label, button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #4cafef;
+      color: #fff;
       border: none;
+      font-weight: bold;
       cursor: pointer;
-      margin: 15px 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       transition: transform 0.2s, background 0.3s;
     }
-
-    #saveBtn:hover, #go-to-form:hover {
+    button:hover {
       background: #2196f3;
-      transform: translateY(-3px);
+      transform: translateY(-2px);
     }
 
-    #canvasWrapper {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      aspect-ratio: 4 / 3;
-      margin: 0 auto;
-      background-color: #f4f4f4;
-    }
-    
-    /* ←ここに追加 */
-    #previewWrapper img {
-      border: 6px solid #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-    }
-
-    #mainCanvas {
+    canvas {
       width: 100%;
       height: auto;
-      background-color: white;
-      touch-action: none;
+      background: #f4f4f4;
+      border-radius: 12px;
     }
-    #templateSelector, #imageLoader, #saveBtn {
-      margin-top: 10px;
+
+    #previewWrapper img {
+      max-width: 100%;
+      border: 6px solid #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #previewNotice {
       font-size: 14px;
+      margin-top: 8px;
+      color: #444;
     }
 
-    #imageLoader {
-      font-size: 14px;      /* 文字サイズを大きく */
+    footer {
+      font-size: 10px;
+      text-align: center;
+      color: #888;
+      margin-top: 20px;
     }
 
+    #langButtons {
+      text-align: center;
+      margin-bottom: 12px;
+    }
     #langButtons button {
-      margin: 0 4px;
+      width: auto;
       padding: 6px 10px;
       font-size: 13px;
       border-radius: 20px;
       border: 1px solid #ccc;
       background: #fff;
-      color: #575757; /* 文字色を黒に */
+      color: #575757;
+      margin: 0 2px;
+      box-shadow: none;
     }
     #langButtons button:hover {
       background: #f0f0f0;
-      color: #575757; /* 文字色を黒に */
-    }
-
-    #notice {
-      margin-top: 10px;
-      font-size: 12px;
-      color: green;
-    }
-
-    h1#title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1565c0; /* 深い青 */
-      text-shadow: none;
-      margin: 24px 0;
-    }
-
-    @media print {
-      body *:not(.fan-print) {
-        display: none !important;
-      }
-
-      #mainCanvas {
-        width: 100%;
-        height: auto;
-      }
-      canvas {
-        page-break-inside: avoid;
-        break-inside: avoid;
-        -webkit-region-break-inside: avoid;
-      }
-    }
-
-    #templateLabel {
-      font-size: 18px;  /* ←ここでサイズ変更 */
-      font-weight: bold; /* 太字にしたい場合 */
-      }
-
-    /* ←この下に追記 */
-    button {
-      background: #4cafef;
-      color: white;
-      font-size: 16px;
-      padding: 12px 24px;
-      border-radius: 30px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s, background 0.3s;
-    }
-    button:hover {
-      background: #2196f3;
-      transform: translateY(-2px);
-    }
-
-    /* 写真選択ボタン（最重要） */
-    #customFileLabel {
-      background: linear-gradient(135deg, #4cafef, #2196f3); /* 青のグラデーション */
-      color: #fff;
-      border-radius: 30px;
-      padding: 14px 26px;   /* 大きめ */
-      cursor: pointer;
-      font-size: 16px;      /* 大きめ文字 */
-      transition: 0.3s;
-      display: inline-block;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-    }
-    #customFileLabel:hover {
-      background: linear-gradient(135deg, #42a5f5, #1e88e5);
-      transform: scale(1.07);
-    }
-
-    /* 共通ボタン（決定→プレビュー、注文フォームへ進む） */
-    button {
-      background: #4cafef;
-      color: white;
-      font-size: 16px;
-      padding: 12px 24px;
-      border-radius: 30px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s, background 0.3s;
-    }
-    button:hover {
-      background: #2196f3;
-      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
+
+  <!-- 言語切替ボタン -->
   <div id="langButtons">
     <button onclick="setLanguage('ja')">🇯🇵JP</button>
     <button onclick="setLanguage('en')">🇺🇸EN</button>
     <button onclick="setLanguage('zh')">🇨🇳中文</button>
     <button onclick="setLanguage('ko')">🇰🇷KO</button>
-    <button onclick="setLanguage('vi')">🇻🇳VIt</button>
+    <button onclick="setLanguage('vi')">🇻🇳VI</button>
   </div>
 
-  <h1 id="title" data-ja="作っちゃおう！Myうちわ" data-en="Let's Make Our Own Fan!" data-zh="一起来制作我们的团扇！" data-ko="우리만의 부채를 만들어보자!" data-vi="Hãy cùng làm quạt giấy của riêng mình!">作っちゃおう！Myうちわ</h1>
+  <h1 id="title">作っちゃおう！Myうちわ</h1>
 
-  <label id="templateLabel" data-ja="うちわのデザインを選んでね👉" data-en="Choose a fan design👉" data-zh="请选择一个团扇设计👉" data-ko="부채 디자인을 선택하세요👉" data-vi="Chọn thiết kế quạt👉">うちわのデザインを選んでね👉</label>
-  <select id="templateSelector">
-    <option value="fan1-highres.png"
-      data-ja="無地"
-      data-en="Plain"
-      data-zh="素色"
-      data-ko="무지"
-      data-vi="Trơn">無地</option>
+  <!-- ① 選択エリア -->
+  <div class="card">
+    <h2 id="step1">1. デザインを選ぶ</h2>
+    <select id="templateSelector">
+      <option value="fan1-highres.png">無地</option>
+      <option value="fan2-highres.png">夏①</option>
+      <option value="fan3-highres.png">夏②</option>
+    </select>
 
-    <option value="fan2-highres.png"
-      data-ja="夏①"
-      data-en="Summer ①"
-      data-zh="夏季①"
-      data-ko="여름①"
-      data-vi="Mùa hè ①">夏①</option>
+    <h2 id="step2">2. 写真をアップロード</h2>
+    <label for="imageLoader" id="customFileLabel">📷 写真を選ぶ</label>
+    <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
+    <p style="font-size:12px; color:#666;" id="imageGuide">※ 画像は指で動かせます。つまんで大きさ変更、2本の指で回転できます。</p>
+  </div>
 
-    <option value="fan3-highres.png"
-      data-ja="夏②"
-      data-en="Summer ②"
-      data-zh="夏季②"
-      data-ko="여름②"
-      data-vi="Mùa hè ②">夏②</option>
-  </select>
-
-  <br />
-  <!-- 変更前 -->
-  <!-- <input type="file" id="imageLoader" accept="image/*" /> -->
-
-  <label for="imageLoader" id="customFileLabel"
-    data-ja="写真を撮る／ライブラリから選ぶ"
-    data-en="Take Photo / Choose from Library"
-    data-zh="拍照 / 从图库选择"
-    data-ko="사진 찍기 / 라이브러리에서 선택"
-    data-vi="Chụp ảnh / Chọn từ thư viện">
-    写真を撮る／ライブラリから選ぶ
-  </label>
-
-  <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
-  <br />
-  <p id="reuploadNotice"
-     data-ja="※ 画像は何度でも選び直せます。<br>画像は指で動かせます。つまんで大きさ変更、2本の指で回します。"
-     data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
-     data-zh="※ 您可以多次重新选择图片。用手指移动图片，捏合缩放，两指旋转。"
-     data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다.손가락으로 이미지 이동, 집어서 확대·축소, 두 손가락으로 회전."
-     data-vi="※ Bạn có thể chọn lại ảnh bao nhiêu lần cũng được. Dùng tay di chuyển ảnh, chụm để phóng to, hai ngón tay xoay."
-     style="font-size: 12px; color: #666;"></p>
-
-  <div id="canvasWrapper">
+  <!-- ② キャンバスエリア -->
+  <div class="card">
+    <h2 id="step3">3. うちわを作ろう</h2>
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
+    <button id="saveBtn">✅ 決定 → プレビュー</button>
+    <p id="notice"></p>
   </div>
 
-  <button id="saveBtn"
-    data-ja="決定 → プレビュー"
-    data-en="Confirm → Preview"
-    data-zh="确认 → 预览"
-    data-ko="확인 → 미리보기"
-    data-vi="Xác nhận → Xem trước">
-    決定 → プレビュー
-  </button>
-  <p id="notice"></p>
-
-
-
-  <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
-    <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
+  <!-- ③ 結果エリア -->
+  <div class="card">
+    <h2 id="step4">4. 確認＆保存</h2>
+    <div id="previewWrapper" style="display:none;">
+      <img id="previewImage" alt="プレビュー画像" />
+    </div>
+    <p id="previewNotice"></p>
+    <button id="go-to-form">📝 注文フォームへ進む</button>
+    <div id="manual-link" style="display:none; font-size:12px; margin-top:8px;">
+      フォームに進めない場合は <a href="https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform?usp=header" target="_blank">こちら</a> をクリックしてください。
+    </div>
   </div>
 
-  <!-- ここが新しい案内文表示領域 -->
-  <div id="previewNotice" style="font-size:14px; color:black; margin-top:10px;"></div>
-</div>
-
-  <!-- 注文フォームへ進むボタン（最初は非表示） -->
-  <br>
-  <button id="go-to-form"
-    data-ja="📝 注文フォームへ進む"
-    data-en="📝 Go to Order Form"
-    data-zh="📝 前往订单表单"
-    data-ko="📝 주문 양식으로 이동"
-    data-vi="📝 Đi tới Form đặt hàng">
-    📝 注文フォームへ進む
-  </button>
-
-  <!-- 手動リンク（失敗時の表示用、最初は非表示） -->
-  <div id="manual-link" style="display: none; margin-top: 10px;"
-    data-ja='フォームに進めない場合は <a href="..." target="_blank">こちら</a> をクリックしてください。'
-    data-en='If you cannot access the form, please click <a href="..." target="_blank">here</a>.'
-    data-zh='如果无法进入表单，请点击 <a href="..." target="_blank">这里</a>。'
-    data-ko='폼에 접속할 수 없는 경우 <a href="..." target="_blank">여기</a>를 클릭하세요.'
-    data-vi='Nếu không mở được form, vui lòng nhấn <a href="..." target="_blank">tại đây</a>.'>
-    フォームに進めない場合は  <a href="https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform?usp=header" target="_blank">こちら</a> をクリックしてください。
-  </div>
-
-  <footer id="footer-text" style="font-size: 6px; color: #888; margin-top: 20px;"
-    data-ja="© 2025 Chugoku Shimbun Hanbai Center. Web application developed by Hitomi Sasaki. All rights reserved.<br>このウェブアプリケーションは、株式会社中国新聞販売センターの従業員による地域イベント向けの自主開発プロジェクトです。<br>※本アプリは公式サービスではありませんが、業務との親和性を考慮して使用されています。"
-    data-en="© 2025 Chugoku Shimbun Hanbai Center. Web application developed by Hitomi Sasaki. All rights reserved.<br>This web application is an in-house project developed by an employee for local events.<br>*This is not an official service but is used considering compatibility with business activities."
-    data-zh="© 2025 中国新闻销售中心。由佐佐木瞳开发的网络应用程序。保留所有权利。<br>该应用程序是中国新闻销售中心员工为社区活动自主开发的项目。<br>*此应用并非官方服务，但考虑到业务需要而使用。"
-    data-ko="© 2025 주고쿠 신문 판매 센터. 사사키 히토미가 개발한 웹 애플리케이션. 모든 권리 보유.<br>이 웹앱은 지역 이벤트를 위해 직원이 자체 개발한 프로젝트입니다.<br>*본 앱은 공식 서비스가 아니지만 업무와의 친화성을 고려하여 사용됩니다."
-    data-vi="© 2025 Trung tâm Phân phối Báo Chugoku. Ứng dụng web do Hitomi Sasaki phát triển. Giữ toàn quyền.<br>Ứng dụng này là dự án tự phát triển của nhân viên cho sự kiện địa phương.<br>*Đây không phải dịch vụ chính thức nhưng được dùng do phù hợp với công việc.">
-    © 2025 Chugoku Shimbun Hanbai Center. Web application developed by Hitomi Sasaki. All rights reserved.<br>
-    このウェブアプリケーションは、株式会社中国新聞販売センターの従業員による地域イベント向けの自主開発プロジェクトです。<br>
-    ※本アプリは公式サービスではありませんが、業務との親和性を考慮して使用されています。
+  <footer>
+    © 2025 Chugoku Shimbun Hanbai Center. Developed by Hitomi Sasaki.
   </footer>
 
   <script>
-    const saveWarningTexts = {
-      ja: '⚠️ まだファイルが選ばれていません。うちわに使う画像を選んでください。',
-      en: '⚠️ No file selected yet. Please upload an image.',
-      zh: '⚠️ 尚未选择文件，请上传图片。',
-      ko: '⚠️ 아직 파일이 선택되지 않았습니다. 이미지를 업로드하세요.',
-      vi: '⚠️ Chưa chọn tệp. Vui lòng tải ảnh lên.',
+    // ===== 多言語切替 =====
+    const translations = {
+      ja: {
+        title: "作っちゃおう！Myうちわ",
+        step1: "1. デザインを選ぶ",
+        step2: "2. 写真をアップロード",
+        step3: "3. うちわを作ろう",
+        step4: "4. 確認＆保存",
+        imageGuide: "※ 画像は指で動かせます。つまんで大きさ変更、2本の指で回転できます。",
+        saveBtn: "✅ 決定 → プレビュー",
+        goToForm: "📝 注文フォームへ進む",
+        previewNotice: "長押しで画像を保存してください"
+      },
+      en: {
+        title: "Let's Make My Fan!",
+        step1: "1. Choose a design",
+        step2: "2. Upload a photo",
+        step3: "3. Create your fan",
+        step4: "4. Preview & Save",
+        imageGuide: "* You can move, resize, and rotate with your fingers.",
+        saveBtn: "✅ Confirm → Preview",
+        goToForm: "📝 Go to Order Form",
+        previewNotice: "Press and hold to save the image"
+      },
+      zh: {
+        title: "来制作我的团扇！",
+        step1: "1. 选择设计",
+        step2: "2. 上传照片",
+        step3: "3. 制作团扇",
+        step4: "4. 确认并保存",
+        imageGuide: "※ 可以用手指移动、缩放、旋转图片。",
+        saveBtn: "✅ 确认 → 预览",
+        goToForm: "📝 前往订单表单",
+        previewNotice: "长按图片保存"
+      },
+      ko: {
+        title: "나만의 부채 만들기!",
+        step1: "1. 디자인 선택",
+        step2: "2. 사진 업로드",
+        step3: "3. 부채 만들기",
+        step4: "4. 확인 및 저장",
+        imageGuide: "※ 손가락으로 이동, 확대/축소, 회전이 가능합니다.",
+        saveBtn: "✅ 확인 → 미리보기",
+        goToForm: "📝 주문서로 이동",
+        previewNotice: "길게 눌러 이미지를 저장하세요"
+      },
+      vi: {
+        title: "Hãy tạo quạt của tôi!",
+        step1: "1. Chọn thiết kế",
+        step2: "2. Tải ảnh lên",
+        step3: "3. Tạo quạt",
+        step4: "4. Xem trước & Lưu",
+        imageGuide: "※ Có thể di chuyển, phóng to/thu nhỏ, xoay bằng ngón tay.",
+        saveBtn: "✅ Xác nhận → Xem trước",
+        goToForm: "📝 Đi đến biểu mẫu đặt hàng",
+        previewNotice: "Nhấn giữ để lưu hình ảnh"
+      }
     };
-    
-    let currentLang = 'ja'; // デフォルトは日本語
-    
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d');
-    let uploadedImg = null;
-    let imgX = 100, imgY = 100, scale = 1, rotation = 0;
-    let isDragging = false, lastX, lastY;
 
-    const templateSelector = document.getElementById('templateSelector');
+    function setLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("step1").textContent = t.step1;
+      document.getElementById("step2").textContent = t.step2;
+      document.getElementById("step3").textContent = t.step3;
+      document.getElementById("step4").textContent = t.step4;
+      document.getElementById("imageGuide").textContent = t.imageGuide;
+      document.getElementById("saveBtn").textContent = t.saveBtn;
+      document.getElementById("go-to-form").textContent = t.goToForm;
+      document.getElementById("previewNotice").textContent = t.previewNotice;
+    }
+
+    // ===== キャンバス処理 =====
+    const canvas = document.getElementById("mainCanvas");
+    const ctx = canvas.getContext("2d");
     let templateImg = new Image();
-    templateImg.src = templateSelector.value;
+    let uploadedImg = null;
+    let imgX = 100, imgY = 100, imgScale = 1, imgRotation = 0;
 
-    templateSelector.addEventListener('change', () => {
-      templateImg.src = templateSelector.value;
-      draw();
-    });
-
-    templateImg.onload = () => draw();
+    // 初期デザイン
+    templateImg.src = "fan1-highres.png";
+    templateImg.onload = draw;
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+
       if (uploadedImg) {
         ctx.save();
         ctx.translate(imgX, imgY);
-        ctx.rotate(rotation);
-        ctx.scale(scale, scale);
-        ctx.drawImage(uploadedImg, -uploadedImg.width / 2, -uploadedImg.height / 2);
+        ctx.rotate(imgRotation);
+        const w = uploadedImg.width * imgScale;
+        const h = uploadedImg.height * imgScale;
+        ctx.drawImage(uploadedImg, -w/2, -h/2, w, h);
         ctx.restore();
-      }
-      if (templateImg.complete) {
-        ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
       }
     }
 
-    document.getElementById('imageLoader').addEventListener('change', function(e) {
+    // デザイン切替
+    document.getElementById("templateSelector").addEventListener("change", function(e) {
+      templateImg.src = e.target.value;
+      templateImg.onload = draw;
+    });
+
+    // 写真アップロード
+    document.getElementById("imageLoader").addEventListener("change", function(e) {
       const reader = new FileReader();
       reader.onload = function(event) {
         uploadedImg = new Image();
-        uploadedImg.onload = () => {
-          imgX = canvas.width / 2;
-          imgY = canvas.height / 2;
-          scale = 1;
-          rotation = 0;
-          draw();
-        };
+        uploadedImg.onload = draw;
         uploadedImg.src = event.target.result;
-      };
+      }
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    canvas.addEventListener('mousedown', e => {
-      isDragging = true;
-      lastX = e.offsetX;
-      lastY = e.offsetY;
+    // 保存 → プレビュー
+    document.getElementById("saveBtn").addEventListener("click", function() {
+      const dataURL = canvas.toDataURL("image/png");
+      document.getElementById("previewImage").src = dataURL;
+      document.getElementById("previewWrapper").style.display = "block";
+      document.getElementById("previewNotice").style.display = "block";
+      document.getElementById("manual-link").style.display = "block";
     });
 
-    canvas.addEventListener('mousemove', e => {
-      if (isDragging && uploadedImg) {
-        imgX += e.offsetX - lastX;
-        imgY += e.offsetY - lastY;
-        lastX = e.offsetX;
-        lastY = e.offsetY;
-        draw();
-      }
-    });
-
-    canvas.addEventListener('mouseup', () => isDragging = false);
-    canvas.addEventListener('wheel', e => {
-      if (uploadedImg) {
-        scale += e.deltaY * -0.001;
-        scale = Math.max(0.1, Math.min(5, scale));
-        draw();
-      }
-      e.preventDefault();
-    });
-
-    // ←→キーで回転
-    window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') rotation -= 0.05;
-      if (e.key === 'ArrowRight') rotation += 0.05;
-      draw();
-    });
-
-// ---------- 保存ボタンの新しい処理（ここに置き換える） ----------
-document.getElementById('saveBtn').addEventListener('click', () => {
-  const noticeEl = document.getElementById('notice');
-
-  if (!uploadedImg) {
-    noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
-    noticeEl.style.color = 'red';
-    setTimeout(() => {
-      noticeEl.textContent = '';
-      noticeEl.style.color = 'green';
-    }, 3000);
-    return;
-  }
-
-  // canvas を Blob にしてプレビュー表示（長押しで保存する方式）
-  canvas.toBlob(blob => {
-    const errorTexts = {
-      ja: '画像作成に失敗しました。もう一度お試しください。',
-      en: 'Failed to create image. Please try again.',
-      zh: '生成图像失败。请再试一次。',
-      ko: '이미지 생성에 실패했습니다. 다시 시도해주세요.',
-      vi: 'Tạo hình ảnh thất bại. Vui lòng thử lại.'
-    };
-
-    if (!blob) {
-      noticeEl.textContent = errorTexts[currentLang] || errorTexts['ja'];
-      noticeEl.style.color = 'red';
-      return;
-    }
-
-    // 前の object URL があれば解放
-    if (window._lastPreviewURL) {
-      try { URL.revokeObjectURL(window._lastPreviewURL); } catch (e) {}
-      window._lastPreviewURL = null;
-    }
-
-    const url = URL.createObjectURL(blob);
-    window._lastPreviewURL = url;
-
-    // プレビュー要素を表示
-    const previewWrapper = document.getElementById('previewWrapper');
-    const previewImg = document.getElementById('previewImage');
-    previewImg.src = url;
-    previewWrapper.style.display = 'block';
-
-    const previewNotice = document.getElementById('previewNotice');
-    const previewNoticeTexts = {
-      ja: `iPhone：画像を👆長押しして「“写真”に追加」を選んで保存してください。<br><br>
-           Android：画像を👆長押しして「画像を保存」を選択してください。<br><br>
-           保存できたら下の「注文フォームへ進む」ボタンから申込へお進みください。`,
-      en: `iPhone: Press and hold 👆 the image, then select "Add to Photos" to save.<br><br>
-           Android: Press and hold 👆 the image, then select "Save Image".<br><br>
-           After saving, proceed to the order form below.`,
-      zh: `iPhone：长按👆图片，然后选择“添加到照片”进行保存。<br><br>
-           Android：长按👆图片，然后选择“保存图片”。<br><br>
-           保存后，请点击下面的“前往订单表单”。`,
-      ko: `iPhone: 이미지를 👆 길게 눌러 "사진에 추가"를 선택하세요.<br><br>
-           Android: 이미지를 👆 길게 눌러 "이미지 저장"을 선택하세요.<br><br>
-           저장 후 아래의 "주문 양식으로 이동" 버튼을 눌러 진행하세요.`,
-      vi: `iPhone: Nhấn và giữ 👆 hình, chọn "Thêm vào Ảnh" để lưu.<br><br>
-           Android: Nhấn và giữ 👆 hình, chọn "Lưu hình ảnh".<br><br>
-           Sau khi lưu, hãy bấm nút "Đi tới Form đặt hàng" bên dưới.`
-    };
-
-    previewNotice.innerHTML = previewNoticeTexts[currentLang] || previewNoticeTexts['ja'];
-
-    // スクロールして目立たせる
-    previewWrapper.scrollIntoView({ behavior: 'smooth' });
-
-  }, 'image/png'); // PNG で生成
-});
-// -------------------------------------------------------------------
-
-    // --- タッチ操作用変数 ---
-    let lastTouchDist = null;
-    let lastTouchAngle = null;
-    canvas.addEventListener('touchstart', e => {
-      if (!uploadedImg) return;
-
-      if (e.touches.length === 1) {
-        isDragging = true;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-      }
-
-      if (e.touches.length === 2) {
-        isDragging = false;
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
-        lastTouchDist = Math.hypot(dx, dy);
-        lastTouchAngle = Math.atan2(dy, dx);
-      }
-
-      e.preventDefault();
-    });
-
-    canvas.addEventListener('touchmove', e => {
-      if (!uploadedImg) return;
-
-      if (e.touches.length === 1 && isDragging) {
-        const dx = e.touches[0].clientX - lastX;
-        const dy = e.touches[0].clientY - lastY;
-        imgX += dx;
-        imgY += dy;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-        draw();
-      }
-
-      if (e.touches.length === 2) {
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
-        const newDist = Math.hypot(dx, dy);
-        const newAngle = Math.atan2(dy, dx);
-
-        // スケーリング
-        if (lastTouchDist !== null) {
-          const scaleChange = newDist / lastTouchDist;
-          scale *= scaleChange;
-          scale = Math.max(0.1, Math.min(5, scale));
-        }
-
-        // 回転
-        if (lastTouchAngle !== null) {
-          const angleChange = newAngle - lastTouchAngle;
-          rotation += angleChange;
-        }
-
-        lastTouchDist = newDist;
-        lastTouchAngle = newAngle;
-        draw();
-      }
-
-      e.preventDefault();
-    });
-
-    canvas.addEventListener('touchend', e => {
-      if (e.touches.length < 2) {
-        lastTouchDist = null;
-        lastTouchAngle = null;
-      }
-      if (e.touches.length === 0) {
-        isDragging = false;
-      }
-      e.preventDefault();
-    });
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.querySelectorAll('[data-ja]').forEach(el => {
-        if (el.dataset[lang]) {
-          if (el.tagName === "OPTION" || el.tagName === "BUTTON" || el.tagName === "LABEL") {
-            el.textContent = el.dataset[lang]; // ボタン・ラベル・セレクト用
-          } else {
-            el.innerHTML = el.dataset[lang];   // h1やpなど
-          }
-        }
-      });
-    }
-    
-    function getTimestampBasedFileName() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      const h = String(now.getHours()).padStart(2, '0');
-      const min = String(now.getMinutes()).padStart(2, '0');
-      const slot = Math.floor(parseInt(min) / 30) * 30;
-      const slotStr = String(slot).padStart(2, '0');
-      return `uchiwa_${y}${m}${d}_${h}${slotStr}.png`;
-    }
-
-    // 📌 フォームへ進むボタンクリック時の処理
-    document.getElementById('go-to-form').addEventListener('click', function () {
-        window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform";
-
-        // 念のため5秒後に手動リンクを表示
-        setTimeout(() => {
-            document.getElementById('manual-link').style.display = 'block';
-        }, 5000);
-    });
-    
-    window.addEventListener('load', () => {
-      const userLang = navigator.language || navigator.userLanguage;
-      if (userLang.startsWith('en')) setLanguage('en');
-      else if (userLang.startsWith('zh')) setLanguage('zh');
-      else if (userLang.startsWith('ko')) setLanguage('ko');
-      else if (userLang.startsWith('vi')) setLanguage('vi');
-      else setLanguage('ja');
+    // 注文フォームへ
+    document.getElementById("go-to-form").addEventListener("click", function() {
+      window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform?usp=header";
     });
   </script>
 </body>
