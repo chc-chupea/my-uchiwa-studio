@@ -632,6 +632,17 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       else setLanguage('ja');
     });
 
+    <!-- プレビュー用モーダル -->
+    <div id="previewModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:9999;">
+      <div style="position:relative; max-width:90%; max-height:90%;">
+        <span id="closePreview" style="position:absolute; top:-40px; right:-10px; font-size:32px; color:#fff; cursor:pointer;">&times;</span>
+        <img id="previewImage" src="" alt="プレビュー画像" style="max-width:100%; max-height:100%; border:6px solid #fff; border-radius:16px; box-shadow:0 8px 16px rgba(0,0,0,0.3);">
+      </div>
+    </div>
+
+
+
     document.getElementById('saveBtn').addEventListener('click', () => {
       if (!uploadedImg) {
         alert("画像をアップロードしてください");
