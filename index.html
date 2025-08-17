@@ -176,17 +176,38 @@
 
   <label id="templateLabel" data-ja="うちわのデザインを選んでね👉" data-en="Choose a fan design👉" data-zh="请选择一个团扇设计👉" data-ko="부채 디자인을 선택하세요👉" data-vi="Chọn thiết kế quạt👉">うちわのデザインを選んでね👉</label>
   <select id="templateSelector">
-    <option value="fan1-highres.png">無地</option>
-    <option value="fan2-highres.png">夏祭り①</option>
-    <option value="fan3-highres.png">夏祭り②</option>
+    <option value="fan1-highres.png"
+      data-ja="無地"
+      data-en="Plain"
+      data-zh="素色"
+      data-ko="무지"
+      data-vi="Trơn">無地</option>
+
+    <option value="fan2-highres.png"
+      data-ja="夏①"
+      data-en="Summer ①"
+      data-zh="夏季①"
+      data-ko="여름①"
+      data-vi="Mùa hè ①">夏①</option>
+
+    <option value="fan3-highres.png"
+      data-ja="夏②"
+      data-en="Summer ②"
+      data-zh="夏季②"
+      data-ko="여름②"
+      data-vi="Mùa hè ②">夏②</option>
   </select>
 
   <br />
   <!-- 変更前 -->
   <!-- <input type="file" id="imageLoader" accept="image/*" /> -->
 
-  <!-- 変更後 -->
-  <label for="imageLoader" id="customFileLabel">
+  <label for="imageLoader" id="customFileLabel"
+    data-ja="写真を撮る／ライブラリから選ぶ"
+    data-en="Take Photo / Choose from Library"
+    data-zh="拍照 / 从图库选择"
+    data-ko="사진 찍기 / 라이브러리에서 선택"
+    data-vi="Chụp ảnh / Chọn từ thư viện">
     写真を撮る／ライブラリから選ぶ
   </label>
 
@@ -204,7 +225,14 @@
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
   </div>
 
-  <button id="saveBtn">決定 → プレビュー</button>
+  <button id="saveBtn"
+    data-ja="決定 → プレビュー"
+    data-en="Confirm → Preview"
+    data-zh="确认 → 预览"
+    data-ko="확인 → 미리보기"
+    data-vi="Xác nhận → Xem trước">
+    決定 → プレビュー
+  </button>
   <p id="notice"></p>
 
 
@@ -217,13 +245,16 @@
   <div id="previewNotice" style="font-size:14px; color:black; margin-top:10px;"></div>
 </div>
 
-
-
-
-
   <!-- 注文フォームへ進むボタン（最初は非表示） -->
   <br>
-  <button id="go-to-form">📝 注文フォームへ進む</button>
+  <button id="go-to-form"
+    data-ja="📝 注文フォームへ進む"
+    data-en="📝 Go to Order Form"
+    data-zh="📝 前往订单表单"
+    data-ko="📝 주문 양식으로 이동"
+    data-vi="📝 Đi tới Form đặt hàng">
+    📝 注文フォームへ進む
+  </button>
 
   <!-- 手動リンク（失敗時の表示用、最初は非表示） -->
   <div id="manual-link" style="display: none; margin-top: 10px;">
@@ -454,16 +485,17 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     });
 
     function setLanguage(lang) {
-      currentLang = lang; // ← これを追加
-      
+      currentLang = lang;
       document.querySelectorAll('[data-ja]').forEach(el => {
         if (el.dataset[lang]) {
-          el.innerHTML = el.dataset[lang];
+          if (el.tagName === "OPTION" || el.tagName === "BUTTON" || el.tagName === "LABEL") {
+            el.textContent = el.dataset[lang]; // ボタン・ラベル・セレクト用
+          } else {
+            el.innerHTML = el.dataset[lang];   // h1やpなど
+          }
         }
       });
-
     }
-
     
     function getTimestampBasedFileName() {
       const now = new Date();
