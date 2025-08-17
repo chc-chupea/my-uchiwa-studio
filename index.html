@@ -147,6 +147,41 @@
     <button onclick="setLanguage('vi')">🇻🇳VIt</button>
   </div>
 
+  <button id="howToBtn" 
+    style="margin:10px; padding:10px 20px; border-radius:20px; background:#2196f3; color:white; border:none; cursor:pointer;">
+    ❓ 使い方
+  </button>
+
+  <!-- モーダル -->
+  <div id="howToModal" 
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; max-width:600px; width:90%; padding:20px; overflow-y:auto; max-height:90%;">
+      <h2 style="text-align:center; color:#1565c0;">📖 Myうちわ LAB 使い方</h2>
+      <ol style="text-align:left; line-height:1.6; font-size:14px; color:#333;">
+        <li><b>デザインを選ぶ：</b> 無地／夏①／夏②から選択</li>
+        <li><b>写真を選ぶ：</b> 「写真を撮る／ライブラリから選ぶ」で撮影 or 画像選択</li>
+        <li><b>編集する：</b> 指で移動、ピンチで拡大縮小、2本指で回転</li>
+        <li><b>プレビュー：</b> 「決定 → プレビュー」を押して完成イメージを確認</li>
+        <li><b>保存：</b> 
+          <ul>
+            <li>iPhone → 画像を長押しして「写真に追加」</li>
+            <li>Android → 画像を長押しして「画像を保存」</li>
+          </ul>
+        </li>
+        <li><b>注文フォーム：</b> 保存したら「注文フォームへ進む」から申込</li>
+        <li><b>LINEでシェア：</b> ページ下部のボタンから友達にURLを送信</li>
+      </ol>
+      <div style="text-align:center; margin-top:20px;">
+        <button onclick="document.getElementById('howToModal').style.display='none';"
+          style="padding:10px 20px; border:none; border-radius:20px; background:#f44336; color:white; cursor:pointer;">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
   <h1 id="title" data-ja="Myうちわ LAB" data-en="Let's Make Our Own Fan!" data-zh="一起来制作我们的团扇！" data-ko="우리만의 부채를 만들어보자!" data-vi="Hãy cùng làm quạt giấy của riêng mình!">Myうちわ LAB</h1>
 
   <div class="area" id="area-select">
@@ -573,6 +608,12 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       else if (userLang.startsWith('vi')) setLanguage('vi');
       else setLanguage('ja');
     });
+
+    // 「使い方」ボタンを押したらモーダルを表示
+    document.getElementById('howToBtn').addEventListener('click', () => {
+      document.getElementById('howToModal').style.display = 'flex';
+    });
+
 </script>
 
 <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js"></script>
