@@ -221,8 +221,7 @@
     data-vi="Xác nhận → Xem trước">
     決定 → プレビュー
   </button>
-
-  <p id="notice" style="display:none;"></p>
+  <p id="notice" style="font-size:14px; color:red;"></p>
 
   </div>
 
@@ -370,11 +369,13 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   if (!uploadedImg) {
     noticeEl.textContent = saveWarningTexts[currentLang] || saveWarningTexts['ja'];
     noticeEl.style.color = 'red';
+    noticeEl.style.display = 'block';  // 👈 表示させる
+
     setTimeout(() => {
       noticeEl.textContent = '';
-      noticeEl.style.color = 'green';
+      noticeEl.style.display = 'none'; // 👈 3秒後に隠す
     }, 3000);
-    return;
+    return; // 👈 ここで処理終了（下の toBlob に進まない）
   }
 
   // canvas を Blob にしてプレビュー表示（長押しで保存する方式）
