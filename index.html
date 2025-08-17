@@ -198,7 +198,7 @@
   <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
   <br />
   <p id="reuploadNotice"
-     data-ja="※ 画像は何度でも選び直せます。<br>画像は1本の指で位置を動かす、2本の指で大きさや向きを変えることができます。"
+     data-ja="※ 画像は何度でも選び直せます。<br>画像は1本の指で位置を動かせます。2本の指で大きさや向きを変えることができます。"
      data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
      data-zh="※ 您可以多次重新选择图片。用手指移动图片，捏合缩放，两指旋转。"
      data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다.손가락으로 이미지 이동, 집어서 확대·축소, 두 손가락으로 회전."
@@ -268,6 +268,15 @@
     data-vi='Nếu không mở được form, vui lòng nhấn <a href="..." target="_blank">tại đây</a>.'>
     フォームに進めない場合は  <a href="https://docs.google.com/forms/d/e/1FAIpQLSf1wV724Vnag4FCcjeU1z-3vaCcfhCjAvGyU8432bu8dyciow/viewform?usp=header" target="_blank">こちら</a> をクリックしてください。
   </div>
+
+  <!-- LINEシェアボタン -->
+  <div class="line-it-button"
+       data-lang="ja"
+       data-type="share-a"
+       data-url="https://chc-chupea.github.io/my-uchiwa-studio/"
+       style="display: inline-block; margin-top: 20px;">
+  </div>
+
 
   <footer id="footer-text" style="font-size: 6px; color: #888; margin-top: 20px;"
     data-ja="© 2025 Chugoku Shimbun Hanbai Center. Web application developed by Hitomi Sasaki. All rights reserved.<br>このウェブアプリケーションは、株式会社中国新聞販売センターの従業員による地域イベント向けの自主開発プロジェクトです。<br>※本アプリは公式サービスではありませんが、業務との親和性を考慮して使用されています。"
@@ -565,5 +574,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       else setLanguage('ja');
     });
 </script>
+
+<script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js"></script>
 </body>
 </html>
