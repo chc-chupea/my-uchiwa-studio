@@ -79,6 +79,12 @@
       color: #575757; /* 文字色を黒に */
     }
 
+
+
+
+
+
+
     #notice {
       margin-top: 10px;
       font-size: 12px;
@@ -130,6 +136,61 @@
       background: #2196f3;
       transform: translateY(-2px);
     }
+
+    /* ===== モーダル用スタイル追記ここから ===== */
+
+    /* モーダル全体 */
+    #previewModal {
+      display: none; /* 初期非表示 */
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(2px); /* 少しぼかすと上品 */
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* コンテンツカード */
+    #previewContent {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 90%;
+      max-height: 90%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      text-align: center;
+      position: relative;
+    }
+
+    /* プレビュー画像 */
+    #previewContent img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    /* 閉じるボタン */
+    #closePreview {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    #closePreview:hover {
+      color: #000;
+    }
+
+    /* ===== モーダル用スタイル追記ここまで ===== */
+
+
+
+
+
 
     /* 写真選択ボタン（最重要） */
     #customFileLabel {
@@ -239,10 +300,18 @@
   <p id="notice"></p>
 
 
-
+  <!-- 旧：下に出すプレビュー -->
   <div id="previewWrapper" style="display:none; text-align:center; margin-top:16px;">
     <img id="previewImage" alt="合成画像プレビュー" style="max-width:90%; border:1px solid #ccc; border-radius:10px;" />
   </div>
+  <!-- 新：モーダル -->
+  <div id="previewModal">
+    <div id="previewContent">
+      <span id="closePreview">&times;</span>
+      <img id="previewImage" alt="合成画像プレビュー" />
+    </div>
+  </div>
+
 
   <!-- ここが新しい案内文表示領域 -->
   <div id="previewNotice" style="font-size:14px; color:black; margin-top:10px;"></div>
@@ -561,6 +630,33 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       else if (userLang.startsWith('ko')) setLanguage('ko');
       else if (userLang.startsWith('vi')) setLanguage('vi');
       else setLanguage('ja');
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      if (!uploadedImg) {
+        alert("画像をアップロードしてください");
+        return;
+      }
+
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        document.getElementById('previewImage').src = url;
+
+        // モーダルを表示
+        document.getElementById('previewModal').style.display = 'flex';
+      }, 'image/png');
+    });
+
+    // 閉じる処理
+    document.getElementById('closePreview').addEventListener('click', () => {
+      document.getElementById('previewModal').style.display = 'none';
+    });
+
+    // 背景クリックでも閉じる
+    document.getElementById('previewModal').addEventListener('click', e => {
+      if (e.target.id === 'previewModal') {
+        document.getElementById('previewModal').style.display = 'none';
+      }
     });
   </script>
 </body>
