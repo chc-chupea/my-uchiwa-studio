@@ -433,7 +433,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
            Sau khi lưu, hãy bấm nút "Đi tới Form đặt hàng" bên dưới.`
     };
 
-previewNotice.innerHTML = previewNoticeTexts[currentLang] || previewNoticeTexts['ja'];
+    previewNotice.innerHTML = previewNoticeTexts[currentLang] || previewNoticeTexts['ja'];
 
     // スクロールして目立たせる
     previewWrapper.scrollIntoView({ behavior: 'smooth' });
