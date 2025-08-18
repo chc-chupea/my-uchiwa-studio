@@ -250,13 +250,13 @@
   <input type="file" id="imageLoader" accept="image/*" style="display:none;" />
   <br />
   <p id="reuploadNotice"
-     data-ja="※ 画像は何度でも選び直せます。<br>画像は1本の指で位置を動かせます。2本の指で大きさや向きを変えることができます。"
-     data-en="※ You can re-select the image as many times as you like. Move the image with your finger. Pinch to zoom, two fingers to rotate."
-     data-zh="※ 您可以多次重新选择图片。用手指移动图片，捏合缩放，两指旋转。"
-     data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다.손가락으로 이미지 이동, 집어서 확대·축소, 두 손가락으로 회전."
-     data-vi="※ Bạn có thể chọn lại ảnh bao nhiêu lần cũng được. Dùng tay di chuyển ảnh, chụm để phóng to, hai ngón tay xoay."
+     data-ja="※ 画像は何度でも選び直せます。"
+     data-en="※ You can re-select the image as many times as you like."
+     data-zh="※ 您可以多次重新选择图片。"
+     data-ko="※ 이미지는 언제든지 다시 선택할 수 있습니다."
+     data-vi="※ Bạn có thể chọn lại ảnh bao nhiêu lần cũng được."
      style="font-size: 12px; color: #666;"></p>
-  </div>
+
 
   <div class="area" id="area-canvas">
     <h2 data-ja="2) デザイン編集スペース"
@@ -271,6 +271,15 @@
     <canvas id="mainCanvas" width="3508" height="2480"></canvas>
   </div>
 
+  <!-- 👇 ここに新しい説明文を追加 -->
+  <p id="editNotice"
+     data-ja="※ 画像は1本の指で位置を動かせます。2本の指で大きさや向きを変えることができます。"
+     data-en="※ Move the image with one finger. Pinch to zoom, use two fingers to rotate."
+     data-zh="※ 用一根手指移动图片。捏合缩放，用两根手指旋转。"
+     data-ko="※ 손가락 한 개로 이미지를 이동합니다. 두 손가락으로 확대/축소 및 회전할 수 있습니다."
+     data-vi="※ Dùng một ngón tay để di chuyển ảnh. Chụm để phóng to/thu nhỏ, hai ngón tay để xoay."
+     style="font-size: 12px; color: #666; margin-bottom: 10px;"></p>
+   
   <button id="saveBtn"
     data-ja="決定 → プレビュー"
     data-en="Confirm → Preview"
@@ -643,4 +652,5 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 
 <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js"></script>
 </body>
+
 </html>
