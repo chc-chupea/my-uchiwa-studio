@@ -66,6 +66,9 @@
       border: 1px solid #ddd;
     }
     
+
+    #mainCanvas { touch-action: none; } /* モバイルでのページスクロール/ズームを無効化 */
+    
     #templateLabel {
       border: none;
       outline: none;
@@ -425,11 +428,12 @@
 
     canvas.addEventListener('mousemove', e => {
       if (isDragging && uploadedImg) {
-        imgX += e.offsetX - lastX;
-        imgY += e.offsetY - lastY;
+        const { scaleX, scaleY } = getScaleFactors();
+        imgX += (e.offsetX - lastX) * scaleX;
+        imgY += (e.offsetY - lastY) * scaleY;
         lastX = e.offsetX;
         lastY = e.offsetY;
-        draw(); // ← ここで毎回再描画
+        draw();
       }
     });
 
@@ -527,32 +531,42 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 });
 // -------------------------------------------------------------------
 
-    // ★ スマホ（タッチ）用：差し替え
+    // ★ スマホ（タッチ）用：一体化＆座標補正（ここから）
     let lastTouchDist = null;
     let lastTouchAngle = null;
 
-    function getTouchPosInCanvas(touch) {
+    // 1本指ドラッグ用に「直近のクライアント座標」を保持（CSSピクセル）
+    let lastClientX = null;
+    let lastClientY = null;
+
+    // キャンバスのCSSサイズ → 論理解像度の倍率を取得
+    function getScaleFactors() {
       const rect = canvas.getBoundingClientRect();
       return {
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top
+        scaleX: canvas.width / rect.width,
+        scaleY: canvas.height / rect.height,
       };
+    }
+
+    // 2本指用はクライアント座標（CSSピクセル）のままでOK（比率で処理するため）
+    function getTouchPosClient(touch) {
+      return { x: touch.clientX, y: touch.clientY };
     }
 
     canvas.addEventListener('touchstart', e => {
       if (!uploadedImg) return;
 
       if (e.touches.length === 1) {
-        // 1本指ドラッグ開始
-        const p = getTouchPosInCanvas(e.touches[0]);
+        // 1本指ドラッグ開始（クライアント座標を保持）
+        const p = getTouchPosClient(e.touches[0]);
+        lastClientX = p.x;
+        lastClientY = p.y;
         isDragging = true;
-        lastX = p.x;
-        lastY = p.y;
       } else if (e.touches.length === 2) {
-        // 2本指ジェスチャー準備
+        // 2本指（ピンチ＆回転）準備
         isDragging = false;
-        const p0 = getTouchPosInCanvas(e.touches[0]);
-        const p1 = getTouchPosInCanvas(e.touches[1]);
+        const p0 = getTouchPosClient(e.touches[0]);
+        const p1 = getTouchPosClient(e.touches[1]);
         const dx = p1.x - p0.x;
         const dy = p1.y - p0.y;
         lastTouchDist = Math.hypot(dx, dy);
@@ -565,31 +579,37 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     canvas.addEventListener('touchmove', e => {
       if (!uploadedImg) return;
 
-      if (e.touches.length === 1 && isDragging) {
-        // 1本指ドラッグ
-        const p = getTouchPosInCanvas(e.touches[0]);
-        imgX += p.x - lastX;
-        imgY += p.y - lastY;
-        lastX = p.x;
-        lastY = p.y;
+      if (isDragging && e.touches.length === 1) {
+        // 1本指ドラッグ：CSSピクセル→キャンバス座標に換算して移動
+        const p = getTouchPosClient(e.touches[0]);
+        const { scaleX, scaleY } = getScaleFactors();
+
+        const dxCanvas = (p.x - lastClientX) * scaleX;
+        const dyCanvas = (p.y - lastClientY) * scaleY;
+
+        imgX += dxCanvas;
+        imgY += dyCanvas;
+
+        lastClientX = p.x;
+        lastClientY = p.y;
+
         draw(); // 毎回再描画
       } else if (e.touches.length === 2) {
-        // ピンチズーム & 回転
-        const p0 = getTouchPosInCanvas(e.touches[0]);
-        const p1 = getTouchPosInCanvas(e.touches[1]);
+        // ピンチズーム & 回転（CSSピクセル比でOK）
+        const p0 = getTouchPosClient(e.touches[0]);
+        const p1 = getTouchPosClient(e.touches[1]);
         const dx = p1.x - p0.x;
         const dy = p1.y - p0.y;
+
         const newDist = Math.hypot(dx, dy);
         const newAngle = Math.atan2(dy, dx);
 
-        // スケール
         if (lastTouchDist != null) {
           const scaleChange = newDist / lastTouchDist;
           scale *= scaleChange;
           scale = Math.max(0.1, Math.min(5, scale));
         }
 
-        // 回転
         if (lastTouchAngle != null) {
           const angleChange = newAngle - lastTouchAngle;
           rotation += angleChange;
@@ -611,6 +631,8 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       }
       if (e.touches.length === 0) {
         isDragging = false;
+        lastClientX = null;
+        lastClientY = null;
       }
       e.preventDefault();
     }, { passive: false });
@@ -620,8 +642,16 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       isDragging = false;
       lastTouchDist = null;
       lastTouchAngle = null;
+      lastClientX = null;
+      lastClientY = null;
     }, { passive: false });
-    // ★ ここまで
+    // ★ スマホ（タッチ）用：一体化＆座標補正（ここまで）
+
+
+
+
+
+
 
 
 
