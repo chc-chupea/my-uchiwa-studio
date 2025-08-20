@@ -423,16 +423,31 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    // === PCマウス用（左ドラッグだけで回転＋移動） ===
+
+    let dragMode = null; // "move" または "rotate"
+
     canvas.addEventListener("mousedown", (e) => {
       if (!uploadedImg) return;
       isDragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
+
+      if (e.button === 0) {
+        dragMode = "move";   // 左クリック → 移動
+      } else if (e.button === 2) {
+        dragMode = "rotate"; // 右クリック → 回転
+      }
     });
 
-    canvas.addEventListener("mouseup", () => { isDragging = false; });
-    canvas.addEventListener("mouseleave", () => { isDragging = false; });
+    canvas.addEventListener("mouseup", () => {
+      isDragging = false;
+      dragMode = null;
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+      isDragging = false;
+      dragMode = null;
+    });
 
     canvas.addEventListener("mousemove", (e) => {
       if (!isDragging || !uploadedImg) return;
@@ -440,10 +455,12 @@
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
 
-      // 横ドラッグ → 回転もしつつ横移動もする
-      rotation += dx * 0.005;   // ←回転（感度調整可）
-      imgX += dx;              // ←横移動
-      imgY += dy;              // ←縦移動
+      if (dragMode === "move") {
+        imgX += dx; // 横移動
+        imgY += dy; // 縦移動
+      } else if (dragMode === "rotate") {
+        rotation += dx * 0.005; // 横ドラッグで回転
+      }
 
       lastX = e.clientX;
       lastY = e.clientY;
@@ -451,7 +468,10 @@
       draw();
     });
 
-    
+    // 右クリックメニューを無効化（必須）
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+
 
     canvas.addEventListener('wheel', e => {
       if (uploadedImg) {
