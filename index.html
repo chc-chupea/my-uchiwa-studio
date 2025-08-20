@@ -429,10 +429,13 @@
         imgY += e.offsetY - lastY;
         lastX = e.offsetX;
         lastY = e.offsetY;
+        draw(); // ← ここで毎回再描画
       }
     });
 
     canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('mouseleave', () => { isDragging = false; });
+
     canvas.addEventListener('wheel', e => {
       if (uploadedImg) {
         scale += e.deltaY * -0.001;
@@ -524,57 +527,70 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 });
 // -------------------------------------------------------------------
 
-    // --- タッチ操作用変数 ---
+    // ★ スマホ（タッチ）用：差し替え
     let lastTouchDist = null;
     let lastTouchAngle = null;
+
+    function getTouchPosInCanvas(touch) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+    }
+
     canvas.addEventListener('touchstart', e => {
       if (!uploadedImg) return;
 
       if (e.touches.length === 1) {
+        // 1本指ドラッグ開始
+        const p = getTouchPosInCanvas(e.touches[0]);
         isDragging = true;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-      }
-
-      if (e.touches.length === 2) {
+        lastX = p.x;
+        lastY = p.y;
+      } else if (e.touches.length === 2) {
+        // 2本指ジェスチャー準備
         isDragging = false;
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        const p0 = getTouchPosInCanvas(e.touches[0]);
+        const p1 = getTouchPosInCanvas(e.touches[1]);
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
         lastTouchDist = Math.hypot(dx, dy);
         lastTouchAngle = Math.atan2(dy, dx);
       }
 
       e.preventDefault();
-    });
+    }, { passive: false });
 
     canvas.addEventListener('touchmove', e => {
       if (!uploadedImg) return;
 
       if (e.touches.length === 1 && isDragging) {
-        const dx = e.touches[0].clientX - lastX;
-        const dy = e.touches[0].clientY - lastY;
-        imgX += dx;
-        imgY += dy;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-        draw();
-      }
-
-      if (e.touches.length === 2) {
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        // 1本指ドラッグ
+        const p = getTouchPosInCanvas(e.touches[0]);
+        imgX += p.x - lastX;
+        imgY += p.y - lastY;
+        lastX = p.x;
+        lastY = p.y;
+        draw(); // 毎回再描画
+      } else if (e.touches.length === 2) {
+        // ピンチズーム & 回転
+        const p0 = getTouchPosInCanvas(e.touches[0]);
+        const p1 = getTouchPosInCanvas(e.touches[1]);
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
         const newDist = Math.hypot(dx, dy);
         const newAngle = Math.atan2(dy, dx);
 
-        // スケーリング
-        if (lastTouchDist !== null) {
+        // スケール
+        if (lastTouchDist != null) {
           const scaleChange = newDist / lastTouchDist;
           scale *= scaleChange;
           scale = Math.max(0.1, Math.min(5, scale));
         }
 
         // 回転
-        if (lastTouchAngle !== null) {
+        if (lastTouchAngle != null) {
           const angleChange = newAngle - lastTouchAngle;
           rotation += angleChange;
         }
@@ -585,9 +601,10 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       }
 
       e.preventDefault();
-    });
+    }, { passive: false });
 
     canvas.addEventListener('touchend', e => {
+      // 指が減ったら2本指状態の履歴をクリア
       if (e.touches.length < 2) {
         lastTouchDist = null;
         lastTouchAngle = null;
@@ -596,7 +613,17 @@ document.getElementById('saveBtn').addEventListener('click', () => {
         isDragging = false;
       }
       e.preventDefault();
-    });
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', () => {
+      // OSやブラウザ都合でキャンセルされた場合の保険
+      isDragging = false;
+      lastTouchDist = null;
+      lastTouchAngle = null;
+    }, { passive: false });
+    // ★ ここまで
+
+
 
     function setLanguage(lang) {
       currentLang = lang;
