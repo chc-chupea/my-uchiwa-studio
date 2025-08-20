@@ -429,6 +429,7 @@
         imgY += e.offsetY - lastY;
         lastX = e.offsetX;
         lastY = e.offsetY;
+        draw();   // 👈 ここを追加（移動したら即描画）
       }
     });
 
@@ -545,7 +546,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       }
 
       e.preventDefault();
-    });
+    });{ passive: false }); // 👈 passive: false を追加
 
     canvas.addEventListener('touchmove', e => {
       if (!uploadedImg) return;
@@ -585,7 +586,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
       }
 
       e.preventDefault();
-    });
+    });{ passive: false }); // 👈 ここも追加
 
     canvas.addEventListener('touchend', e => {
       if (e.touches.length < 2) {
