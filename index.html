@@ -420,36 +420,25 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    // === PCマウス用（左ドラッグだけで回転＋移動合成） ===
-    let isDragging = false;
-    let lastX, lastY;
-
-    canvas.addEventListener("mousedown", (e) => {
-      if (!uploadedImg) return;
+    canvas.addEventListener('mousedown', e => {
       isDragging = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
+      lastX = e.offsetX;
+      lastY = e.offsetY;
     });
 
-    canvas.addEventListener("mouseup", () => { isDragging = false; });
-    canvas.addEventListener("mouseleave", () => { isDragging = false; });
-
-    canvas.addEventListener("mousemove", (e) => {
-      if (!isDragging || !uploadedImg) return;
-
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-
-      // 横ドラッグ → 回転もしつつ横移動もする
-      rotation += dx * 0.01;   // ←回転（感度調整可）
-      imgX += dx;              // ←横移動
-      imgY += dy;              // ←縦移動
-
-      lastX = e.clientX;
-      lastY = e.clientY;
-
-      draw();
+    canvas.addEventListener('mousemove', e => {
+      if (isDragging && uploadedImg) {
+        const { scaleX, scaleY } = getScaleFactors();
+        imgX += (e.offsetX - lastX) * scaleX;
+        imgY += (e.offsetY - lastY) * scaleY;
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        draw();
+      }
     });
+
+    canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('mouseleave', () => { isDragging = false; });
 
     canvas.addEventListener('wheel', e => {
       if (uploadedImg) {
